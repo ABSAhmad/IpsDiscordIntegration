@@ -77,7 +77,7 @@ class _Discord extends LoginAbstract
 
             if ( !$userData['verified'] )
             {
-                throw new \IPS\Login\Exception( 'generic_error', \IPS\Login\Exception::INTERNAL_ERROR );
+                \IPS\Output::i()->error( 'discord_not_verified', '' );
             }
 
             /* Set member properties */

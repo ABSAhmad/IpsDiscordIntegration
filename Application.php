@@ -12,7 +12,14 @@ namespace IPS\discord;
 
 /**
  * Discord Integration Application Class
- * @TODO: name syncing
+ * @TODO: Feature: Name Syncing.
+ * @TODO: Feature: Pages support (need to purchase app).
+ * @TODO: Feature: Calendar Event support.
+ * @TODO: Feature: Downloads support (need to purchase app).
+ * @TODO: Feature: Delay notifications.
+ * @TODO: Re-factor: Move all post related settings to APP specific settings.
+ * @TODO: Feature: Bit.ly URL shortening?
+ *
  * @TODO: Feature: Notifications for PMs.
  * @TODO: Feature: Notifications for watched topics.
  * @TODO: (User)Setting: Send notifications on Discord?
@@ -55,7 +62,7 @@ class _Application extends \IPS\Application
          */
         \chmod(
             \IPS\ROOT_PATH . '/applications/discord/interface/oauth/auth.php',
-            644
+            \IPS\FILE_PERMISSION_NO_WRITE
         );
 
         if ( !$profileSync || !$systemLogin )

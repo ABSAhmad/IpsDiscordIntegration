@@ -101,6 +101,11 @@ class _GuildMember extends \IPS\discord\Api\AbstractResponse
         $roles = $this->guild()->getRoles();
         $guildMemberRoles = [];
 
+        if ( !isset( $guildMember['roles'] ) )
+        {
+            return [];
+        }
+
         $roleIds = $guildMember['roles'];
 
         foreach ( $roleIds as $roleId )

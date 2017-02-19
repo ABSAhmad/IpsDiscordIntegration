@@ -24,7 +24,7 @@ class _Upgrade
     {
         \chmod(
             \IPS\ROOT_PATH . '/applications/discord/interface/oauth/auth.php',
-            644
+            \IPS\FILE_PERMISSION_NO_WRITE
         );
 
         return TRUE;

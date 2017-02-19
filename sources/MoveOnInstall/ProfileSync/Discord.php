@@ -69,6 +69,15 @@ class _Discord extends ProfileSyncAbstract
 
                 \IPS\Log::log( $e, 'discord' );
             }
+            catch ( \IPS\discord\Api\Exception\NotVerifiedException $e )
+            {
+                $this->member->discord_token = NULL;
+                $this->member->save();
+
+                \IPS\Log::log( $e, 'discord' );
+
+                \IPS\Output::i()->error( 'discord_not_verified', '' );
+            }
         }
 
         return $this->user;
@@ -169,8 +178,7 @@ class _Discord extends ProfileSyncAbstract
 
         if ( !$userData['verified'] )
         {
-            //TODO:
-            throw new \Exception();
+            throw new \IPS\discord\Api\Exception\NotVerifiedException();
         }
 
         return $userData;

@@ -19,12 +19,11 @@ $lang = array(
     'discord_client_secret_desc' => "You can create a discord application <a target='_blank' href='https://discordapp.com/developers/applications/me'>here</a>",
     'discord_bot_token' => "Discord Bot Token",
     'discord_bot_token_desc' => "You can create a discord application <a target='_blank' href='https://discordapp.com/developers/applications/me'>here</a>",
-
     'discord_guild_id' => "Discord Guild ID",
     'discord_guild_id_desc' => "This will be automatically assigned when choosing the server after saving",
 
     'discord_map_settings' => "Basic",
-    'discord_remove_unmapped' => "Remove unmapped roles",
+    'discord_remove_unmapped' => "Remove unmapped roles?",
     'discord_remove_unmapped_desc' => "Should roles that are not mapped to IPS groups be removed from discord members?",
     'discord_sync_bans' => "Sync bans",
     'discord_sync_bans_desc' => "Should a member get banned on discord if said member got banned on the forum?",
@@ -60,4 +59,5 @@ $lang = array(
 
     /* !Error Messages */
     'discord_access_denied' => "You denied access",
+    'discord_not_verified' => 'Your discord email address is not verified!',
 );

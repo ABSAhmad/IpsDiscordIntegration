@@ -48,6 +48,7 @@ abstract class _AbstractResponse
      * Handle the api response, always call this instead of api->send();
      *
      * @return array|NULL
+     * @throws \Exception
      */
     protected function handleApi()
     {
@@ -63,6 +64,10 @@ abstract class _AbstractResponse
             $this->throwException( $statusCode );
         } catch ( Exception\NotFoundException $e ) {
             /* Ignore not found exceptions as members can leave discord any time etc. */
+        } catch ( \Exception $e ) {
+            \IPS\Log::log( $response->decodeJson(), 'discord_exception' );
+
+            throw $e;
         }
 
         return $response->decodeJson();

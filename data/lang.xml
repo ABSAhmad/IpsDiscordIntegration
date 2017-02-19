@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <language>
- <app key="discord" version="10007">
+ <app key="discord" version="10008">
   <word key="__app_discord" js="0">Discord Integration</word>
   <word key="menu__discord_settings" js="0">Discord</word>
   <word key="menu__discord_settings_settings" js="0">Settings</word>
@@ -17,7 +17,7 @@
   <word key="discord_guild_id" js="0">Discord Guild ID</word>
   <word key="discord_guild_id_desc" js="0">This will be automatically assigned when choosing the server after saving</word>
   <word key="discord_map_settings" js="0">Basic</word>
-  <word key="discord_remove_unmapped" js="0">Remove unmapped roles</word>
+  <word key="discord_remove_unmapped" js="0">Remove unmapped roles?</word>
   <word key="discord_remove_unmapped_desc" js="0">Should roles that are not mapped to IPS groups be removed from discord members?</word>
   <word key="discord_sync_bans" js="0">Sync bans</word>
   <word key="discord_sync_bans_desc" js="0">Should a member get banned on discord if said member got banned on the forum?</word>
@@ -44,5 +44,6 @@
   <word key="discord_channel_approved" js="0">Channel to post in if the topic/post is approved.</word>
   <word key="discord_channel_unapproved" js="0">Channel to post in if the topic/post is unapproved.</word>
   <word key="discord_access_denied" js="0">You denied access</word>
+  <word key="discord_not_verified" js="0">Your discord email address is not verified!</word>
  </app>
 </language>
