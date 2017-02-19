@@ -16,6 +16,7 @@ namespace IPS\discord;
  * @TODO: Feature: Pages support (need to purchase app).
  * @TODO: Feature: Calendar Event support.
  * @TODO: Feature: Downloads support (need to purchase app).
+ * @TODO: Feature: Invite members to the discord server.
  * @TODO: Feature: Delay notifications.
  * @TODO: Re-factor: Move all post related settings to APP specific settings.
  * @TODO: Feature: Bit.ly URL shortening?
