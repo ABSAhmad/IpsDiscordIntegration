@@ -100,8 +100,6 @@ class _Discord extends LoginAbstract
                 $response['access_token'],
                 array(
                     'photo' => TRUE,
-                    'cover' => TRUE,
-                    'status' => ''
                 )
             );
 
