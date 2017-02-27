@@ -3,6 +3,7 @@
 * This is a Discord Integration for IPS 4.1.x.
 * Tested on >= 4.1.18.1, might work on older versions but those are not supported.
 * NO SUPPORT PROVIDED UNLESS YOU PURCHASE THIS APPLICATION HERE: https://invisionpower.com/files/file/8457-discord-integration/
+* - If Installing using github, create a directory called 'discord' in applications, then place these files into that new directory then install as normal. ie; {IPSPATH}/applications/discord/{these files}
 
 As already mentioned, you are free to use this but no support will be provided if you have not purchased the application, the source is public for those who cannot afford it but have the knowledge to support themselves.
 

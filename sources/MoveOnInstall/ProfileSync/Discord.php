@@ -119,16 +119,6 @@ class _Discord extends ProfileSyncAbstract
     }
 
     /**
-     * Get cover photo
-     *
-     * @return	NULL
-     */
-    public function cover()
-    {
-        return NULL;
-    }
-
-    /**
      * Get name
      *
      * @return	string
@@ -141,16 +131,6 @@ class _Discord extends ProfileSyncAbstract
         {
             return $user['username'];
         }
-    }
-
-    /**
-     * Get status
-     *
-     * @return  NULL
-     */
-    public function status()
-    {
-        return NULL;
     }
 
     /**
