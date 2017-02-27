@@ -7,7 +7,7 @@
                 "name": "discord_id",
                 "type": "VARCHAR",
                 "length": 64,
-                "default": ""
+                "default": null
             }
         ]
     },
@@ -17,7 +17,7 @@
             "core_members",
             {
                 "name": "discord_token",
-                "type": "TEXT"
+                "default": null
             }
         ]
     },
