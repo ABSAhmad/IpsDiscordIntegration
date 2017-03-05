@@ -19,10 +19,10 @@ class discord_hook_topic extends _HOOK_CLASS_
     {
         $return = call_user_func_array( 'parent::processAfterCreate', func_get_args() );
 
-        if ( \IPS\Settings::i()->discord_post_topics || ( $this->hidden() && \IPS\Settings::i()->discord_post_unapproved_topics ) )
+        if ( $this->container()->discord_post_topics || ( $this->hidden() && $this->container()->discord_post_unapproved_topics ) )
         {
             $channel = new \IPS\discord\Api\Channel;
-            $channel->post( $this );
+            $channel->postTopic( $this );
         }
 
         return $return;
@@ -39,10 +39,10 @@ class discord_hook_topic extends _HOOK_CLASS_
     {
         $return = call_user_func_array( 'parent::onUnhide', func_get_args() );
 
-        if ( $approving && \IPS\Settings::i()->discord_post_topics )
+        if ( $approving && $this->container()->discord_post_topics )
         {
             $channel = new \IPS\discord\Api\Channel;
-            $channel->post( $this );
+            $channel->postTopic( $this );
         }
 
         return $return;

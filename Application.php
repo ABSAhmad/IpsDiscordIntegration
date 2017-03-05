@@ -13,14 +13,11 @@ namespace IPS\discord;
 /**
  * Discord Integration Application Class
  * @TODO: Feature: Name Syncing.
- * @TODO: Feature: Pages support (need to purchase app).
- * @TODO: Feature: Calendar Event support.
- * @TODO: Feature: Downloads support (need to purchase app).
  * @TODO: Feature: Invite members to the discord server.
  * @TODO: Feature: Delay notifications.
- * @TODO: Re-factor: Move all post related settings to APP specific settings.
  * @TODO: Feature: Bit.ly URL shortening?
  *
+ * @TODO: Feature: Pages support. Status: BLOCKED. Reason: \IPS\cms\modules\admin\databases::form() is not extendable.
  * @TODO: Feature: Notifications for PMs.
  * @TODO: Feature: Notifications for watched topics.
  * @TODO: (User)Setting: Send notifications on Discord?

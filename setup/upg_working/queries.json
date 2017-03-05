@@ -1,0 +1,142 @@
+[
+    {
+        "method": "addColumn",
+        "params": [
+            "downloads_categories",
+            {
+                "name": "cdiscord_channel_approved",
+                "type": "VARCHAR",
+                "length": 64,
+                "default": "0"
+            }
+        ]
+    },
+    {
+        "method": "addColumn",
+        "params": [
+            "downloads_categories",
+            {
+                "name": "cdiscord_channel_unapproved",
+                "type": "VARCHAR",
+                "length": 64,
+                "default": "0"
+            }
+        ]
+    },
+    {
+        "method": "addColumn",
+        "params": [
+            "calendar_calendars",
+            {
+                "name": "cal_discord_channel_approved",
+                "type": "VARCHAR",
+                "length": 64,
+                "default": "0"
+            }
+        ]
+    },
+    {
+        "method": "addColumn",
+        "params": [
+            "calendar_calendars",
+            {
+                "name": "cal_discord_channel_unapproved",
+                "type": "VARCHAR",
+                "length": 64,
+                "default": "0"
+            }
+        ]
+    },
+    {
+        "method": "addColumn",
+        "params": [
+            "forums_forums",
+            {
+                "name": "discord_post_format",
+                "type": "TEXT",
+                "default": null
+            }
+        ]
+    },
+    {
+        "method": "addColumn",
+        "params": [
+            "forums_forums",
+            {
+                "name": "discord_topic_format",
+                "type": "TEXT",
+                "default": null
+            }
+        ]
+    },
+    {
+        "method": "addColumn",
+        "params": [
+            "forums_forums",
+            {
+                "name": "discord_post_topics",
+                "type": "TINYINT",
+                "length": 1,
+                "default": 0
+            }
+        ]
+    },
+    {
+        "method": "addColumn",
+        "params": [
+            "forums_forums",
+            {
+                "name": "discord_post_unapproved_topics",
+                "type": "TINYINT",
+                "length": 1,
+                "default": 0
+            }
+        ]
+    },
+    {
+        "method": "addColumn",
+        "params": [
+            "forums_forums",
+            {
+                "name": "discord_post_posts",
+                "type": "TINYINT",
+                "length": 1,
+                "default": 0
+            }
+        ]
+    },
+    {
+        "method": "addColumn",
+        "params": [
+            "forums_forums",
+            {
+                "name": "discord_post_unapproved_posts",
+                "type": "TINYINT",
+                "length": 1,
+                "default": 0
+            }
+        ]
+    },
+    {
+        "method": "addColumn",
+        "params": [
+            "calendar_calendars",
+            {
+                "name": "cal_discord_post_format",
+                "type": "TEXT",
+                "default": null
+            }
+        ]
+    },
+    {
+        "method": "addColumn",
+        "params": [
+            "downloads_categories",
+            {
+                "name": "cdiscord_post_format",
+                "type": "TEXT",
+                "default": null
+            }
+        ]
+    }
+]
