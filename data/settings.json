@@ -22,5 +22,9 @@
     {
         "key": "discord_sync_bans",
         "default": "0"
+    },
+    {
+        "key": "discord_sync_names",
+        "default": "0"
     }
 ]

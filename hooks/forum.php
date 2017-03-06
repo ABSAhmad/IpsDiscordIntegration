@@ -61,14 +61,14 @@ class discord_hook_forum extends _HOOK_CLASS_
         $form->add(
             new \IPS\Helpers\Form\TextArea(
                 'discord_topic_format',
-                $this->discord_topic_format ?: '{poster} has just posted a new topic called: "{topicTitle}". Read more: {link}',
+                $this->discord_topic_format ?: '{poster} has just posted a new topic called: "{title}". Read more: {link}',
                 TRUE, [], NULL, NULL, NULL, 'discord_topic_format'
             )
         );
         $form->add(
             new \IPS\Helpers\Form\TextArea(
                 'discord_post_format',
-                $this->discord_post_format ?: '{poster} has just posted a new post to the topic: "{topicTitle}". Read more: {link}',
+                $this->discord_post_format ?: '{poster} has just posted a new post to the topic: "{title}". Read more: {link}',
                 TRUE, [], NULL, NULL, NULL, 'discord_post_format'
             )
         );

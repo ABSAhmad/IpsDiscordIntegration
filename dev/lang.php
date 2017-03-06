@@ -25,8 +25,10 @@ $lang = array(
     'discord_map_settings' => "Basic",
     'discord_remove_unmapped' => "Remove unmapped roles?",
     'discord_remove_unmapped_desc' => "Should roles that are not mapped to IPS groups be removed from discord members?",
-    'discord_sync_bans' => "Sync bans",
+    'discord_sync_bans' => "Sync bans?",
     'discord_sync_bans_desc' => "Should a member get banned on discord if said member got banned on the forum?",
+    'discord_sync_names' => "Sync names?",
+    'discord_sync_names_desc' => "This will update the discord nicks to the member names so the names match on discord/IPS.",
     'discord_handshake' => "Handshake",
 
     /* !Login Handler */
@@ -53,10 +55,9 @@ $lang = array(
     'discord_post_unapproved_posts' => "Notify about new unapproved posts?",
     'discord_post_unapproved_posts_desc' => "Should notifications be sent to discord channels about new (unapproved) posts?",
 
-
     'discord_topic_format' => "Discord topic format",
     'discord_topic_format_desc' => "This will be posted to a channel when there is a new topic.<br>Available variables:<br>{poster} = Poster name.<br>{title} = The title of the topic that is being posted.<br>{link} = Link to the topic.",
-    'discord_post_format' => "Discord post/content format",
+    'discord_post_format' => "Discord post format",
     'discord_post_format_desc' => "This will be posted to a channel when there is a new post.<br>Available variables:<br>{poster} = Poster name.<br>{title} = The title of the topic that is being posted in.<br>{link} = Link to the post.",
 
     /* !Calendar Form */

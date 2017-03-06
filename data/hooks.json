@@ -38,5 +38,17 @@
     "downloadsFile": {
         "type": "C",
         "class": "\\IPS\\downloads\\File"
+    },
+    "downloadsApplication": {
+        "type": "C",
+        "class": "\\IPS\\downloads\\Application"
+    },
+    "calendarApplication": {
+        "type": "C",
+        "class": "\\IPS\\calendar\\Application"
+    },
+    "forumsApplication": {
+        "type": "C",
+        "class": "\\IPS\\forums\\Application"
     }
 }

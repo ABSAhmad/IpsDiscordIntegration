@@ -30,7 +30,7 @@ class discord_hook_post extends _HOOK_CLASS_
         if ( !$first && $item instanceof \IPS\forums\Topic && ( $comment->container()->discord_post_posts || ( $comment->hidden() && $comment->container()->discord_post_unapproved_posts ) ) )
         {
             $channel = new \IPS\discord\Api\Channel;
-            $channel->postPost( $comment, $member );
+            $channel->postContentItem( $comment, $member );
         }
 
         return $comment;
@@ -50,7 +50,7 @@ class discord_hook_post extends _HOOK_CLASS_
         if ( $approving && $this->container()->discord_post_posts )
         {
             $channel = new \IPS\discord\Api\Channel;
-            $channel->postPost( $this );
+            $channel->postContentItem( $this );
         }
 
         return $return;

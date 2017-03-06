@@ -10,13 +10,37 @@ namespace IPS\discord\Api;
 class _Channel extends \IPS\discord\Api\AbstractResponse
 {
     /**
+     * Post a notification about new content to discord.
+     *
+     * @param \IPS\Content $content
+     * @param \IPS\Member $member
+     * @return array|NULL
+     */
+    public function postContentItem( \IPS\Content $content, \IPS\Member $member = NULL )
+    {
+        $member = $member ?: $content->author();
+        $channelId = $content->hidden() ? $content->container()->discord_channel_unapproved : $content->container()->discord_channel_approved;
+
+        if ( !$channelId )
+        {
+            /* Ignore... */
+            return NULL;
+        }
+
+        return $this->post(
+            $this->createMessage( $member, $content ),
+            $channelId
+        );
+    }
+
+    /**
      * Post given message to the given channel.
      *
      * @param string $content
      * @param string $channelId
      * @return array|NULL
      */
-    public function post( $content, $channelId )
+    protected function post( $content, $channelId )
     {
         $this->api->setUrl( \IPS\discord\Api::API_URL )
             ->setAuthType( \IPS\discord\Api::AUTH_TYPE_BOT )
@@ -27,102 +51,6 @@ class _Channel extends \IPS\discord\Api\AbstractResponse
             ]));
 
         return $this->handleApi();
-    }
-
-    /**
-     * Post a notification about a new topic to discord.
-     *
-     * @param \IPS\forums\Topic $topic
-     * @param \IPS\Member $member
-     * @return array|NULL
-     */
-    public function postTopic( \IPS\forums\Topic $topic, \IPS\Member $member = NULL )
-    {
-        $member = $member ?: $topic->author();
-        $channelId = $topic->hidden() ? $topic->container()->discord_channel_unapproved : $topic->container()->discord_channel_approved;
-
-        if ( !$channelId )
-        {
-            /* Ignore... */
-            return;
-        }
-
-        return $this->post(
-            $this->createMessage( $member, $topic ),
-            $channelId
-        );
-    }
-
-    /**
-     * Post a notification about a new post to discord.
-     *
-     * @param \IPS\forums\Topic\Post $post
-     * @param \IPS\Member $member
-     * @return array|NULL
-     */
-    public function postPost( \IPS\forums\Topic\Post $post, \IPS\Member $member = NULL )
-    {
-        $member = $member ?: $post->author();
-        $channelId = $post->hidden() ? $post->container()->discord_channel_unapproved : $post->container()->discord_channel_approved;
-
-        if ( !$channelId )
-        {
-            /* Ignore... */
-            return;
-        }
-
-        return $this->post(
-            $this->createMessage( $member, $post ),
-            $channelId
-        );
-    }
-
-    /**
-     * Post a notification about a new calendar event to discord.
-     *
-     * @param \IPS\calendar\Event $event
-     * @param \IPS\Member $member
-     * @return array|NULL
-     */
-    public function postCalendarEvent( \IPS\calendar\Event $event, \IPS\Member $member = NULL )
-    {
-        $member = $member ?: $event->author();
-        $channelId = $event->hidden() ? $event->container()->discord_channel_unapproved : $event->container()->discord_channel_approved;
-
-        if ( !$channelId )
-        {
-            /* Ignore... */
-            return;
-        }
-
-        return $this->post(
-            $this->createMessage( $member, $event ),
-            $channelId
-        );
-    }
-
-    /**
-     * Post a notification about a new file to discord.
-     *
-     * @param \IPS\downloads\File $file
-     * @param \IPS\Member $member
-     * @return array|NULL
-     */
-    public function postDownloadsFile( \IPS\downloads\File $file, \IPS\Member $member = NULL )
-    {
-        $member = $member ?: $file->author();
-        $channelId = $file->hidden() ? $file->container()->discord_channel_unapproved : $file->container()->discord_channel_approved;
-
-        if ( !$channelId )
-        {
-            /* Ignore... */
-            return;
-        }
-
-        return $this->post(
-            $this->createMessage( $member, $file ),
-            $channelId
-        );
     }
 
     /**

@@ -12,10 +12,10 @@ namespace IPS\discord;
 
 /**
  * Discord Integration Application Class
- * @TODO: Feature: Name Syncing.
  * @TODO: Feature: Invite members to the discord server.
  * @TODO: Feature: Delay notifications.
  * @TODO: Feature: Bit.ly URL shortening?
+ * @TODO: Discord Widget.
  *
  * @TODO: Feature: Pages support. Status: BLOCKED. Reason: \IPS\cms\modules\admin\databases::form() is not extendable.
  * @TODO: Feature: Notifications for PMs.
@@ -28,6 +28,7 @@ class _Application extends \IPS\Application
     /**
      * Make sure we have our login handler in the correct table.
      * Make sure we move our login handler files.
+     * Make sure we add our needed columns.
      */
     public function installOther()
     {
@@ -67,5 +68,7 @@ class _Application extends \IPS\Application
         {
             throw new \OutOfRangeException( 'Copying required file failed.' );
         }
+
+        \IPS\discord\Util::addAllAttributes();
     }
 }

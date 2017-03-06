@@ -59,6 +59,39 @@ class _uninstall
             );
 
         } catch ( \Exception $e ) {}
+
+        try
+        {
+            if ( \IPS\Db::i()->checkForTable( 'downloads_categories' ) )
+            {
+                \IPS\Db::i()->dropColumn( 'downloads_categories', 'cdiscord_channel_approved' );
+                \IPS\Db::i()->dropColumn( 'downloads_categories', 'cdiscord_channel_unapproved' );
+                \IPS\Db::i()->dropColumn( 'downloads_categories', 'cdiscord_post_format' );
+            }
+
+            if ( \IPS\Db::i()->checkForTable( 'calendar_calendars' ) )
+            {
+                \IPS\Db::i()->dropColumn( 'calendar_calendars', 'cal_discord_channel_approved' );
+                \IPS\Db::i()->dropColumn( 'calendar_calendars', 'cal_discord_channel_unapproved' );
+                \IPS\Db::i()->dropColumn( 'calendar_calendars', 'cal_discord_post_format' );
+            }
+
+            if ( \IPS\Db::i()->checkForTable( 'forums_forums' ) )
+            {
+                \IPS\Db::i()->dropColumn( 'forums_forums', 'discord_post_format' );
+                \IPS\Db::i()->dropColumn( 'forums_forums', 'discord_topic_format' );
+                \IPS\Db::i()->dropColumn( 'forums_forums', 'discord_post_topics' );
+                \IPS\Db::i()->dropColumn( 'forums_forums', 'discord_post_unapproved_topics' );
+                \IPS\Db::i()->dropColumn( 'forums_forums', 'discord_post_posts' );
+                \IPS\Db::i()->dropColumn( 'forums_forums', 'discord_post_unapproved_posts' );
+            }
+        } catch ( \IPS\Db\Exception $e ) {
+            /* 1091: Column does not exist. */
+            if( $e->getCode() !== 1091 )
+            {
+                throw $e;
+            }
+        }
     }
 
     /**

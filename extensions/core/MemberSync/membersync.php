@@ -38,7 +38,7 @@ class _membersync
         {
             try {
                 $guildMember = new \IPS\discord\Api\GuildMember;
-                $guildMember->updateRoles( $member, $changes );
+                $guildMember->update( $member, $changes );
             } catch ( \Exception $e ) {
                 /* Ignore, can be re-synced. */
             }

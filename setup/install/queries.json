@@ -33,29 +33,5 @@
                 "default": ""
             }
         ]
-    },
-    "4": {
-        "method": "addColumn",
-        "params": [
-            "forums_forums",
-            {
-                "name": "discord_channel_approved",
-                "type": "VARCHAR",
-                "length": 64,
-                "default": "0"
-            }
-        ]
-    },
-    "5": {
-        "method": "addColumn",
-        "params": [
-            "forums_forums",
-            {
-                "name": "discord_channel_unapproved",
-                "type": "VARCHAR",
-                "length": 64,
-                "default": "0"
-            }
-        ]
     }
 }

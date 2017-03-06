@@ -1,12 +1,12 @@
 <?php
 /**
- * @brief		syncGroups Task
+ * @brief		syncMembers Task
  * @author		<a href='http://www.invisionpower.com'>Invision Power Services, Inc.</a>
  * @copyright	(c) 2001 - 2016 Invision Power Services, Inc.
  * @license		http://www.invisionpower.com/legal/standards/
  * @package		IPS Community Suite
  * @subpackage	discord
- * @since		29 Jan 2017
+ * @since		06 Mar 2017
  * @version		SVN_VERSION_NUMBER
  */
 
@@ -20,9 +20,9 @@ if ( !defined( '\IPS\SUITE_UNIQUE_KEY' ) )
 }
 
 /**
- * syncGroups Task
+ * syncMembers Task
  */
-class _syncGroups extends \IPS\Task
+class _syncMembers extends \IPS\Task
 {
     /**
      * Execute
@@ -45,8 +45,9 @@ class _syncGroups extends \IPS\Task
         foreach ( $members as $key => $member )
         {
             try {
-                $guildMember->updateRoles( $member );
+                $guildMember->update( $member );
 
+                /* Prevent hitting API rate limit. */
                 if ( $count % 5 === 0 )
                 {
                     sleep( 10 );
@@ -57,10 +58,11 @@ class _syncGroups extends \IPS\Task
                 throw new \IPS\Task\Exception( $this, 'Hit discord API rate limit at member: ' . $member->name . ', iteration: ' . $count );
             }
             catch ( \IPS\discord\Api\Exception\NotFoundException $e ) {
-                /* Ignore to not interrupt syncing process if a member left or something similar happened  */
+                /* Ignore to not interrupt syncing process if a member left or something similar happened. */
             }
             catch ( \Exception $e ) {
-                if ( $e instanceof \IPS\discord\Api\Exception\BaseException ) {
+                if ( $e instanceof \IPS\discord\Api\Exception\BaseException )
+                {
                     throw new \IPS\Task\Exception( $this, 'Error: ' . $e->getErrorLangString() . ' at member ' . $member->name . ', iteration: ' . $count );
                 }
                 throw new \IPS\Task\Exception( $this, $e->getMessage() );
@@ -80,5 +82,7 @@ class _syncGroups extends \IPS\Task
      * @return	void
      */
     public function cleanup()
-    {}
+    {
+
+    }
 }

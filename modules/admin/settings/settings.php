@@ -80,6 +80,9 @@ class _settings extends \IPS\Dispatcher\Controller
         $form->add(
             new \IPS\Helpers\Form\YesNo( 'discord_sync_bans', $settings->discord_sync_bans ?: FALSE )
         );
+        $form->add(
+            new \IPS\Helpers\Form\YesNo( 'discord_sync_names', $settings->discord_sync_names ?: FALSE )
+        );
 
         if ( $values = $form->values() )
         {

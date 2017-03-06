@@ -107,7 +107,7 @@ class _Discord extends LoginAbstract
 
             /* Sync user */
             $guildMember = new \IPS\discord\Api\GuildMember;
-            $guildMember->updateRoles( $member );
+            $guildMember->update( $member );
 
             /* Return */
             return $member;
@@ -136,7 +136,7 @@ class _Discord extends LoginAbstract
 
         /* Sync member */
         $guildMember = new \IPS\discord\Api\GuildMember;
-        $guildMember->updateRoles( $member );
+        $guildMember->update( $member );
     }
 
     /**
