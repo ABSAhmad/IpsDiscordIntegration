@@ -80,45 +80,8 @@ class _settings extends \IPS\Dispatcher\Controller
         $form->add(
             new \IPS\Helpers\Form\YesNo( 'discord_sync_bans', $settings->discord_sync_bans ?: FALSE )
         );
-
-        $form->addTab( 'discord_post_settings' );
         $form->add(
-            new \IPS\Helpers\Form\YesNo( 'discord_post_topics', $settings->discord_post_topics ?: FALSE, FALSE, [
-                'togglesOff' => [
-                    'discord_post_unapproved_topics'
-                ]
-            ] )
-        );
-        $form->add(
-            new \IPS\Helpers\Form\YesNo( 'discord_post_unapproved_topics', $settings->discord_post_unapproved_topics ?: FALSE,
-                FALSE, [], NULL, NULL, NULL, 'discord_post_unapproved_topics'
-            )
-        );
-        $form->add(
-            new \IPS\Helpers\Form\YesNo( 'discord_post_posts', $settings->discord_post_posts ?: FALSE, FALSE, [
-                'togglesOff' => [
-                    'discord_post_unapproved_posts'
-                ]
-            ] )
-        );
-        $form->add(
-            new \IPS\Helpers\Form\YesNo( 'discord_post_unapproved_posts', $settings->discord_post_unapproved_posts ?: FALSE,
-                FALSE, [], NULL, NULL, NULL, 'discord_post_unapproved_posts'
-            )
-        );
-        $form->add(
-            new \IPS\Helpers\Form\TextArea(
-                'discord_new_topic',
-                $settings->discord_new_topic ?: '%poster has just posted a new topic called: "%topicTitle". Read more: %link',
-                TRUE, [], NULL, NULL, NULL, 'discord_new_topic'
-            )
-        );
-        $form->add(
-            new \IPS\Helpers\Form\TextArea(
-                'discord_new_post',
-                $settings->discord_new_post ?: '%poster has just posted a new post to the topic: "%topicTitle". Read more: %link',
-                TRUE, [], NULL, NULL, NULL, 'discord_new_post'
-            )
+            new \IPS\Helpers\Form\YesNo( 'discord_sync_names', $settings->discord_sync_names ?: FALSE )
         );
 
         if ( $values = $form->values() )

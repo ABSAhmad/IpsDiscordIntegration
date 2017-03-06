@@ -10,109 +10,113 @@ namespace IPS\discord\Api;
 class _Channel extends \IPS\discord\Api\AbstractResponse
 {
     /**
-     * Post given message to the given channel.
+     * Post a notification about new content to discord.
      *
-     * @param \IPS\forums\Topic $topic
-     * @param \IPS\forums\Topic\Post $post
+     * @param \IPS\Content $content
      * @param \IPS\Member $member
      * @return array|NULL
      */
-    public function post( \IPS\forums\Topic $topic, \IPS\forums\Topic\Post $post = NULL, \IPS\Member $member = NULL )
+    public function postContentItem( \IPS\Content $content, \IPS\Member $member = NULL )
     {
-        $info = $this->getPostInformation( $topic, $post, $member );
+        $member = $member ?: $content->author();
+        $channelId = $content->hidden() ? $content->container()->discord_channel_unapproved : $content->container()->discord_channel_approved;
 
-        if ( $info !== NULL )
+        if ( !$channelId )
         {
-            $this->api->setUrl( \IPS\discord\Api::API_URL )
-                ->setAuthType( \IPS\discord\Api::AUTH_TYPE_BOT )
-                ->setUri( 'channels/' . $info['channelId'] . '/messages' )
-                ->setMethod( 'post' )
-                ->setParams(json_encode([
-                    'content' => $info['content']
-                ]));
-
-            return $this->handleApi();
+            /* Ignore... */
+            return NULL;
         }
 
-        return NULL;
+        return $this->post(
+            $this->createMessage( $member, $content ),
+            $channelId
+        );
     }
 
     /**
-     * Build the message to be sent and retrieve the correct channel id.
+     * Post given message to the given channel.
      *
-     * @param \IPS\forums\Topic $topic
-     * @param \IPS\forums\Topic\Post|NULL $post
-     * @param \IPS\Member|NULL $member
-     * @return array|null
+     * @param string $content
+     * @param string $channelId
+     * @return array|NULL
      */
-    protected function getPostInformation( \IPS\forums\Topic $topic, \IPS\forums\Topic\Post $post = NULL, \IPS\Member $member = NULL )
+    protected function post( $content, $channelId )
     {
-        $member = $member ?: \IPS\Member::load( $post ? $post->author_id : $topic->starter_id );
-        $post = $post ?: $topic->firstComment();
-        $isHidden = $post->new_topic ? $topic->hidden() : $post->hidden();
+        $this->api->setUrl( \IPS\discord\Api::API_URL )
+            ->setAuthType( \IPS\discord\Api::AUTH_TYPE_BOT )
+            ->setUri( "channels/{$channelId}/messages" )
+            ->setMethod( 'post' )
+            ->setParams(json_encode([
+                'content' => $content
+            ]));
 
-        if (
-            ( ( $channelId = $topic->container()->discord_channel_approved ) && !$isHidden )
-            ||
-            ( ( $channelId = $topic->container()->discord_channel_unapproved ) && $isHidden )
-        )
-        {
-            $link = (string) \IPS\Http\Url::internal(
-                "app=forums&module=forums&controller=topic&id={$topic->tid}&do=findComment&comment={$post->pid}",
-                'front',
-                'forums_topic'
-            );
-
-            return [
-                'content' => $this->createMessage( $member, $topic->title, $link, $post->new_topic ),
-                'channelId' => $channelId
-            ];
-        }
-
-        return NULL;
+        return $this->handleApi();
     }
 
     /**
      * Create message to be send.
      *
      * @param \IPS\Member $member
-     * @param string $title
-     * @param string $link
-     * @param bool $isTopic
+     * @param \IPS\Content $content
      * @return string
      */
-    protected function createMessage( \IPS\Member $member, $title, $link, $isTopic )
+    protected function createMessage( \IPS\Member $member, \IPS\Content $content )
     {
-        $poster = "@{$member->name}";
-
-        if ( $member->is_discord_connected )
-        {
-            $poster = "<@!{$member->discord_id}>";
-        }
+        $poster = static::getPoster( $member );
 
         $search = [
-            '%poster',
-            '%topicTitle',
-            '%link'
+            '{poster}',
+            '{title}',
+            '{link}'
         ];
 
         $replace = [
             $poster,
-            $title,
-            $link
+            static::getContentTitle( $content ),
+            (string) $content->url()
         ];
 
-        if ( $isTopic )
-        {
-            $subject = \IPS\Settings::i()->discord_new_topic;
-        }
-        else
-        {
-            $subject = \IPS\Settings::i()->discord_new_post;
-        }
-
+        $formatProperty = $content instanceof \IPS\forums\Topic ? 'discord_topic_format' : 'discord_post_format';
+        $subject = $content->container()->$formatProperty;
         $message = str_replace( $search, $replace, $subject );
 
         return $message;
+    }
+
+    /**
+     * Get appropriate title of the content item.
+     *
+     * @param \IPS\Content $content
+     * @return string
+     */
+    protected static function getContentTitle( \IPS\Content $content )
+    {
+        if ( $content instanceof \IPS\forums\Topic\Post )
+        {
+            return $content->item()->title;
+        }
+
+        if ( $content instanceof \IPS\downloads\File )
+        {
+            return $content->name;
+        }
+
+        return $content->title;
+    }
+
+    /**
+     * Tag the poster on discord.
+     *
+     * @param \IPS\Member $member
+     * @return string
+     */
+    protected static function getPoster( \IPS\Member $member )
+    {
+        if ( $member->is_discord_connected )
+        {
+            return "<@!{$member->discord_id}>";
+        }
+
+        return "@{$member->name}";
     }
 }

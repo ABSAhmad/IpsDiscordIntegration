@@ -16,18 +16,7 @@ class discord_hook_forum extends _HOOK_CLASS_
      */
     public function form( &$form )
     {
-        $args = func_get_args();
-        /**
-         * Need to use a hacky way to support PHP5 and 7
-         * call_user_func_array( 'parent::form', func_get_args() ) errors out on PHP7 so cannot use that.
-         * @see http://stackoverflow.com/questions/1905800/php-call-user-func-array-pass-by-reference-issue
-         */
-        $Args = array();
-        foreach( $args as $k => &$arg )
-        {
-            $Args[$k] = &$arg;
-        }
-        call_user_func_array( 'parent::form', $Args );
+        parent::form( $form );
 
         $guild = new \IPS\discord\Api\Guild;
         $channels = $guild->getChannelsOnlyName();
@@ -42,6 +31,46 @@ class discord_hook_forum extends _HOOK_CLASS_
             new \IPS\Helpers\Form\Select( 'discord_channel_unapproved', $this->discord_channel_unapproved ?: 0, TRUE, [
                 'options' => $channels
             ] )
+        );
+
+        $form->addHeader( 'discord_notifications' );
+        $form->add(
+            new \IPS\Helpers\Form\YesNo( 'discord_post_topics', $this->discord_post_topics ?: FALSE, FALSE, [
+                'togglesOff' => [
+                    'discord_post_unapproved_topics'
+                ]
+            ] )
+        );
+        $form->add(
+            new \IPS\Helpers\Form\YesNo( 'discord_post_unapproved_topics', $this->discord_post_unapproved_topics ?: FALSE,
+                FALSE, [], NULL, NULL, NULL, 'discord_post_unapproved_topics'
+            )
+        );
+        $form->add(
+            new \IPS\Helpers\Form\YesNo( 'discord_post_posts', $this->discord_post_posts ?: FALSE, FALSE, [
+                'togglesOff' => [
+                    'discord_post_unapproved_posts'
+                ]
+            ] )
+        );
+        $form->add(
+            new \IPS\Helpers\Form\YesNo( 'discord_post_unapproved_posts', $this->discord_post_unapproved_posts ?: FALSE,
+                FALSE, [], NULL, NULL, NULL, 'discord_post_unapproved_posts'
+            )
+        );
+        $form->add(
+            new \IPS\Helpers\Form\TextArea(
+                'discord_topic_format',
+                $this->discord_topic_format ?: '{poster} has just posted a new topic called: "{title}". Read more: {link}',
+                TRUE, [], NULL, NULL, NULL, 'discord_topic_format'
+            )
+        );
+        $form->add(
+            new \IPS\Helpers\Form\TextArea(
+                'discord_post_format',
+                $this->discord_post_format ?: '{poster} has just posted a new post to the topic: "{title}". Read more: {link}',
+                TRUE, [], NULL, NULL, NULL, 'discord_post_format'
+            )
         );
     }
 }

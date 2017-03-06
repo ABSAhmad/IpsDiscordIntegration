@@ -60,7 +60,7 @@ class _Discord extends ProfileSyncAbstract
 
                 /* Sync roles */
                 $guildMember = new \IPS\discord\Api\GuildMember;
-                $guildMember->updateRoles( $this->member );
+                $guildMember->update( $this->member );
             }
             catch ( \IPS\Http\Request\Exception $e )
             {

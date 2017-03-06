@@ -22,5 +22,33 @@
     "nodecontroller": {
         "type": "C",
         "class": "\\IPS\\Node\\Controller"
+    },
+    "downloadsCategory": {
+        "type": "C",
+        "class": "\\IPS\\downloads\\Category"
+    },
+    "calendarForm": {
+        "type": "C",
+        "class": "\\IPS\\calendar\\Calendar"
+    },
+    "calendarEvent": {
+        "type": "C",
+        "class": "\\IPS\\calendar\\Event"
+    },
+    "downloadsFile": {
+        "type": "C",
+        "class": "\\IPS\\downloads\\File"
+    },
+    "downloadsApplication": {
+        "type": "C",
+        "class": "\\IPS\\downloads\\Application"
+    },
+    "calendarApplication": {
+        "type": "C",
+        "class": "\\IPS\\calendar\\Application"
+    },
+    "forumsApplication": {
+        "type": "C",
+        "class": "\\IPS\\forums\\Application"
     }
 }

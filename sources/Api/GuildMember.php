@@ -20,13 +20,13 @@ class _GuildMember extends \IPS\discord\Api\AbstractResponse
     protected $role;
 
     /**
-     * Update the roles of the given member.
+     * Update the roles/nick of the given member.
      *
      * @param \IPS\Member $member
      * @param array $changes
      * @return array|NULL
      */
-    public function updateRoles( \IPS\Member $member, array $changes = [] )
+    public function update( \IPS\Member $member, array $changes = [] )
     {
         /** @noinspection PhpUndefinedFieldInspection */
         if ( !$member->is_discord_connected )
@@ -37,14 +37,21 @@ class _GuildMember extends \IPS\discord\Api\AbstractResponse
         $member = $this->handleMemberChanges( $member, $changes );
         $roles = $this->getRoleIds( $member );
 
+        $data['roles'] = $roles;
+
+        /** @noinspection PhpUndefinedFieldInspection */
+        if ( \IPS\Settings::i()->discord_sync_names )
+        {
+            /** @noinspection PhpUndefinedFieldInspection */
+            $data['nick'] = $member->name;
+        }
+
         /** @noinspection PhpUndefinedFieldInspection */
         $this->api->setUrl( \IPS\discord\Api::API_URL )
             ->setAuthType( \IPS\discord\Api::AUTH_TYPE_BOT )
             ->setMember( $member )
             ->setUri( 'guilds/{guild.id}/members/{user.id}' )
-            ->setParams(json_encode([
-                'roles' => $roles
-            ]))
+            ->setParams( json_encode( $data ) )
             ->setMethod( 'patch' );
 
         return $this->handleApi();
