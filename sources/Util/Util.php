@@ -37,21 +37,21 @@ class _Util
      */
     public static function addCalendarAttributes()
     {
-        \IPS\Db::i()->addColumn( 'calendar_calendars', [
+        static::addColumn( 'calendar_calendars', [
             'name' => 'cal_discord_channel_approved',
             'type' => 'VARCHAR',
             'length' => 64,
             'default' => '0',
         ]);
 
-        \IPS\Db::i()->addColumn( 'calendar_calendars', [
+        static::addColumn( 'calendar_calendars', [
             'name' => 'cal_discord_channel_unapproved',
             'type' => 'VARCHAR',
             'length' => 64,
             'default' => '0',
         ]);
 
-        \IPS\Db::i()->addColumn( 'calendar_calendars', [
+        static::addColumn( 'calendar_calendars', [
             'name' => 'cal_discord_post_format',
             'type' => 'TEXT',
             'default' => NULL,
@@ -65,21 +65,21 @@ class _Util
      */
     public static function addDownloadsAttributes()
     {
-        \IPS\Db::i()->addColumn( 'downloads_categories', [
+        static::addColumn( 'downloads_categories', [
             'name' => 'cdiscord_channel_approved',
             'type' => 'VARCHAR',
             'length' => 64,
             'default' => '0',
         ]);
 
-        \IPS\Db::i()->addColumn( 'downloads_categories', [
+        static::addColumn( 'downloads_categories', [
             'name' => 'cdiscord_channel_unapproved',
             'type' => 'VARCHAR',
             'length' => 64,
             'default' => '0',
         ]);
 
-        \IPS\Db::i()->addColumn( 'downloads_categories', [
+        static::addColumn( 'downloads_categories', [
             'name' => 'cdiscord_post_format',
             'type' => 'TEXT',
             'default' => NULL,
@@ -93,45 +93,79 @@ class _Util
      */
     public static function addForumsAttributes()
     {
-        \IPS\Db::i()->addColumn( 'forums_forums', [
-            'name' => 'discord_post_format',
-            'type' => 'TEXT',
-            'default' => NULL,
+        static::addColumn( 'forums_forums', [
+            'name' => 'discord_channel_approved',
+            'type' => 'VARCHAR',
+            'length' => 64,
+            'default' => '0'
         ] );
 
-        \IPS\Db::i()->addColumn( 'forums_forums', [
-            'name' => 'discord_topic_format',
-            'type' => 'TEXT',
-            'default' => NULL,
-        ]);
+        static::addColumn( 'forums_forums', [
+            'name' => 'discord_channel_unapproved',
+            'type' => 'VARCHAR',
+            'length' => 64,
+            'default' => '0'
+        ] );
 
-        \IPS\Db::i()->addColumn( 'forums_forums', [
+        static::addColumn( 'forums_forums', [
             'name' => 'discord_post_topics',
             'type' => 'TINYINT',
             'length' => 1,
             'default' => 0,
         ]);
 
-        \IPS\Db::i()->addColumn( 'forums_forums', [
+        static::addColumn( 'forums_forums', [
             'name' => 'discord_post_unapproved_topics',
             'type' => 'TINYINT',
             'length' => 1,
             'default' => 0,
         ]);
 
-        \IPS\Db::i()->addColumn( 'forums_forums', [
+        static::addColumn( 'forums_forums', [
             'name' => 'discord_post_posts',
             'type' => 'TINYINT',
             'length' => 1,
             'default' => 0,
         ]);
 
-        \IPS\Db::i()->addColumn( 'forums_forums', [
+        static::addColumn( 'forums_forums', [
             'name' => 'discord_post_unapproved_posts',
             'type' => 'TINYINT',
             'length' => 1,
             'default' => 0,
         ]);
+
+        static::addColumn( 'forums_forums', [
+            'name' => 'discord_topic_format',
+            'type' => 'TEXT',
+            'default' => NULL,
+        ]);
+
+        static::addColumn( 'forums_forums', [
+            'name' => 'discord_post_format',
+            'type' => 'TEXT',
+            'default' => NULL,
+        ] );
+    }
+
+    /**
+     * Add column. Ignore if it already exists.
+     *
+     * @param string $table
+     * @param array $definition
+     * @return void
+     */
+    protected static function addColumn( $table, array $definition )
+    {
+        try {
+            \IPS\Db::i()->addColumn( $table, $definition);
+        } catch ( \IPS\Db\Exception $e ) {
+            /* 1060: Duplicate column... */
+            if ( $e->getCode() !== 1060 )
+            {
+                throw $e;
+            }
+        }
     }
 
     /**
