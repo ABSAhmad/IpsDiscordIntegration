@@ -15,24 +15,30 @@ if ( !defined( '\IPS\SUITE_UNIQUE_KEY' ) )
 class _Discord extends ProfileSyncAbstract
 {
     /**
-     * @brief	Login handler key
+     * @brief Login handler key
+     *
+     * @var string $loginKey
      */
     public static $loginKey = 'Discord';
 
     /**
-     * @brief	Icon
+     * @var string $icon
      */
     public static $icon = 'lock';
 
     /**
-     * @brief	Authorization token
+     * @brief Authorization token
+     *
+     * @var string $authToken
      */
-    protected $authToken = NULL;
+    protected $authToken;
 
     /**
-     * @brief	User data
+     * @brief User data
+     *
+     * @var array $user
      */
-    protected $user = NULL;
+    protected $user;
 
     /**
      * Get user data
@@ -41,63 +47,66 @@ class _Discord extends ProfileSyncAbstract
      */
     protected function user()
     {
-        if ( $this->user === NULL && $this->member->discord_token )
+        if ( $this->user != NULL || !$this->member->discord_token )
         {
-            try
+            return $this->user;
+        }
+
+        try
+        {
+            $response = \IPS\Http\Url::external( 'https://discordapp.com/api/v6/oauth2/token' )->request()->post([
+                'client_id'		=> \IPS\Settings::i()->discord_client_id,
+                'client_secret'	=> \IPS\Settings::i()->discord_client_secret,
+                'refresh_token'	=> $this->member->discord_token,
+                'grant_type'	=> 'refresh_token'
+            ])->decodeJson();
+
+            if ( isset( $response['access_token'] ) )
             {
-                $response = \IPS\Http\Url::external( \IPS\discord\Api::OAUTH2_URL . 'token' )->request()->post( [
-                    'client_id'		=> \IPS\Settings::i()->discord_client_id,
-                    'client_secret'	=> \IPS\Settings::i()->discord_client_secret,
-                    'refresh_token'	=> $this->member->discord_token,
-                    'grant_type'	=> 'refresh_token'
-                ] )->decodeJson();
-
-                if ( isset( $response['access_token'] ) )
-                {
-                    $this->authToken = $response['access_token'];
-                    $this->user = $this->get();
-                }
-
-                /* Sync roles */
-                $guildMember = new \IPS\discord\Api\GuildMember;
-                $guildMember->update( $this->member );
+                $this->authToken = $response['access_token'];
+                $this->user = $this->get();
             }
-            catch ( \IPS\Http\Request\Exception $e )
-            {
-                $this->member->discord_token = NULL;
-                $this->member->save();
 
-                \IPS\Log::log( $e, 'discord' );
-            }
-            catch ( \IPS\discord\Api\Exception\NotVerifiedException $e )
-            {
-                $this->member->discord_token = NULL;
-                $this->member->save();
+            //TODO: helper method
+            \IPS\discord\Api\Guild::primary()->modifyMember(
+                $this->member->discord_id,
+                [
+                    'roles' => ( new \IPS\discord\Util\Member( $this->member ) )->shouldHaveRoles()->toArray()
+                ]
+            );
+        }
+        catch ( \IPS\discord\Api\Exception\NotVerifiedException $e )
+        {
+            $this->member->discord_token = NULL;
+            $this->member->save();
 
-                \IPS\Log::log( $e, 'discord' );
+            \IPS\Log::log( $e, 'discord_profile_sync_get' );
 
-                \IPS\Output::i()->error( 'discord_not_verified', '' );
-            }
+            \IPS\Output::i()->error( 'discord_not_verified', '' );
+        }
+        catch ( \Exception $e )
+        {
+            $this->member->discord_token = NULL;
+            $this->member->save();
+
+            \IPS\Log::log( $e, 'discord_profile_sync_get' );
         }
 
         return $this->user;
     }
 
-
     /**
-     * Is connected?
-     *
-     * @return	bool
+     * @return bool
      */
     public function connected()
     {
-        return (bool) ( $this->member->discord_id && $this->member->discord_token );
+        return $this->member->discord_id && $this->member->discord_token;
     }
 
     /**
      * Get photo
      *
-     * @return	\IPS\Http\Url|\IPS\File|NULL
+     * @return \IPS\Http\Url|\IPS\File|NULL
      */
     public function photo()
     {
@@ -105,38 +114,35 @@ class _Discord extends ProfileSyncAbstract
         {
             $user = $this->user();
 
-            if ( isset( $user['avatar'] ) && !empty( $user['avatar'] ) )
+            if ( !isset( $user['avatar'] ) || empty( $user['avatar'] ) )
             {
-                return \IPS\Http\Url::external( \IPS\discord\Api::API_URL . "users/{$user['id']}/avatars/{$user['avatar']}.jpg" );
+                return NULL;
             }
         }
         catch ( \IPS\Http\Request\Exception $e )
         {
-            \IPS\Log::log( $e, 'discord' );
+            \IPS\Log::log( $e, 'discord_get_photo' );
+
+            return NULL;
         }
 
-        return NULL;
+        return \IPS\Http\Url::external(
+            "https://discordapp.com/api/v6/users/{$user['id']}/avatars/{$user['avatar']}.jpg"
+        );
     }
 
     /**
-     * Get name
-     *
-     * @return	string
+     * @return string
      */
     public function name()
     {
         $user = $this->user();
 
-        if ( isset( $user['username'] ) )
-        {
-            return $user['username'];
-        }
+        return isset( $user['username'] ) ? $user['username'] : '';
     }
 
     /**
-     * Disassociate
-     *
-     * @return	void
+     * @return void
      */
     protected function _disassociate()
     {
@@ -148,19 +154,19 @@ class _Discord extends ProfileSyncAbstract
     /**
      * Get API data
      *
-     * @return array
-     * @throws \Exception
+     * @throws \IPS\discord\Api\Exception\NotVerifiedException
+     *
+     * @return \Illuminate\Support\Collection
      */
     protected function get()
     {
-        $discordMember = new \IPS\discord\Api\Member;
-        $userData = $discordMember->getDiscordUser( $this->authToken );
+        $discordMember = \IPS\discord\Api\Member::create( $this->authToken )->getCurrent();
 
-        if ( !$userData['verified'] )
+        if ( !$discordMember['verified'] )
         {
             throw new \IPS\discord\Api\Exception\NotVerifiedException();
         }
 
-        return $userData;
+        return $discordMember;
     }
 }

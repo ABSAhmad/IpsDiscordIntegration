@@ -2,6 +2,13 @@
 
 namespace IPS\discord;
 
+/* To prevent PHP errors (extending class does not exist) revealing path */
+if ( !defined( '\IPS\SUITE_UNIQUE_KEY' ) )
+{
+    header( ( isset( $_SERVER['SERVER_PROTOCOL'] ) ? $_SERVER['SERVER_PROTOCOL'] : 'HTTP/1.0' ) . ' 403 Forbidden' );
+    exit;
+}
+
 /**
  * Class Util
  *
@@ -153,6 +160,7 @@ class _Util
      *
      * @param string $table
      * @param array $definition
+     *
      * @return void
      */
     protected static function addColumn( $table, array $definition )
@@ -172,6 +180,7 @@ class _Util
      * Check if app is installed.
      *
      * @param string $name
+     *
      * @return bool
      */
     protected static function appIsInstalled( $name )

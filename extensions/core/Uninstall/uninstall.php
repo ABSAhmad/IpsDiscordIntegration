@@ -27,8 +27,9 @@ class _uninstall
     /**
      * Code to execute before the application has been uninstalled
      *
-     * @param	string	$application	Application directory
-     * @return	array
+     * @param string $application Application directory
+     *
+     * @return array
      */
     public function preUninstall( $application )
     {
@@ -38,12 +39,14 @@ class _uninstall
      * Code to execute after the application has been uninstalled.
      * Make sure we remove our login handler.
      *
-     * @param	string	$application	Application directory
-     * @return	array
+     * @param string $application Application directory
+     *
+     * @return void
      */
     public function postUninstall( $application )
     {
-        try {
+        try
+        {
             \IPS\Db::i()->delete( 'core_login_handlers', [
                 'login_key=?', 'Discord'
             ] );
@@ -58,7 +61,8 @@ class _uninstall
                 \IPS\ROOT_PATH . '/system/Login/Discord.php'
             );
 
-        } catch ( \Exception $e ) {}
+        }
+        catch ( \Exception $e ) {}
 
         try
         {
@@ -95,25 +99,28 @@ class _uninstall
     }
 
     /**
+     * Code to execute when other applications or plugins are uninstalled
+     *
+     * @param string $application Application directory
+     * @param int $plugin Plugin ID
+     *
+     * @return void
+     */
+    public function onOtherUninstall( $application=NULL, $plugin=NULL )
+    {
+    }
+
+    /**
      * Code to execute when other applications are uninstalled
      *
-     * @param	string	$application	Application directory
-     * @return	void
-     * @deprecated	This is here for backwards-compatibility - all new code should go in onOtherUninstall
+     * @param string $application Application directory
+     *
+     * @return void
+     *
+     * @deprecated This is here for backwards-compatibility - all new code should go in onOtherUninstall
      */
     public function onOtherAppUninstall( $application )
     {
         return $this->onOtherUninstall( $application );
-    }
-
-    /**
-     * Code to execute when other applications or plugins are uninstalled
-     *
-     * @param	string	$application	Application directory
-     * @param	int		$plugin			Plugin ID
-     * @return	void
-     */
-    public function onOtherUninstall( $application=NULL, $plugin=NULL )
-    {
     }
 }

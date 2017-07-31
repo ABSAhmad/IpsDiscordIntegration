@@ -2,6 +2,13 @@
 
 namespace IPS\Login;
 
+/* To prevent PHP errors (extending class does not exist) revealing path */
+if ( !defined( '\IPS\SUITE_UNIQUE_KEY' ) )
+{
+    header( ( isset( $_SERVER['SERVER_PROTOCOL'] ) ? $_SERVER['SERVER_PROTOCOL'] : 'HTTP/1.0' ) . ' 403 Forbidden' );
+    exit;
+}
+
 /**
  * Class Discord
  *
@@ -10,20 +17,16 @@ namespace IPS\Login;
 class _Discord extends LoginAbstract
 {
     /**
-     * @brief Icon
      * @var string $icon
-     * @TODO
      */
     public static $icon = 'lock';
 
     /**
-     * Get Form
+     * @param \IPS\Http\Url $url The URL for the login page
+     * @param bool $ucp	 Is UCP (as opposed to login form)?
+     * @param \IPS\Http\Url	$destination The URL to redirect to after a successful login.
      *
-     * @param	\IPS\Http\Url	$url			The URL for the login page
-     * @param	bool			$ucp			Is UCP? (as opposed to login form)
-     * @param	\IPS\Http\Url	$destination	The URL to redirect to after a successful login
-     *
-     * @return	string
+     * @return string
      */
     public function loginForm( \IPS\Http\Url $url, $ucp = FALSE, \IPS\Http\Url $destination = NULL )
     {
@@ -38,12 +41,12 @@ class _Discord extends LoginAbstract
     }
 
     /**
-     * Authenticate
+     * @param string $url The URL for the login page.
+     * @param \IPS\Member $member If we want to integrate this login method with an existing member, provide the member object.
      *
-     * @param	string			$url	The URL for the login page
-     * @param	\IPS\Member		$member	If we want to integrate this login method with an existing member, provide the member object
-     * @return	\IPS\Member
-     * @throws	\IPS\Login\Exception
+     * @throws \IPS\Login\Exception
+     *
+     * @return \IPS\Member
      */
     public function authenticate( $url, $member=NULL )
     {
@@ -55,13 +58,13 @@ class _Discord extends LoginAbstract
             }
 
             /* Retrieve access token */
-            $response = \IPS\Http\Url::external( \IPS\discord\Api::OAUTH2_URL . 'token' )
+            $response = \IPS\Http\Url::external( 'https://discordapp.com/api/v6/oauth2/token' )
                 ->request()
                 ->post([
                     'client_id' => \IPS\Settings::i()->discord_client_id,
                     'client_secret' => \IPS\Settings::i()->discord_client_secret,
                     'grant_type' => 'authorization_code',
-                    'redirect_uri'	=> ((string) \IPS\Http\Url::internal( 'applications/discord/interface/oauth/auth.php', 'none' )),
+                    'redirect_uri'	=> (string) \IPS\Http\Url::internal( 'applications/discord/interface/oauth/auth.php', 'none' ),
                     'code' => \IPS\Request::i()->code
                 ])
                 ->decodeJson();
@@ -72,17 +75,16 @@ class _Discord extends LoginAbstract
             }
 
             /* Get user data */
-            $discordMember = new \IPS\discord\Api\Member;
-            $userData = $discordMember->getDiscordUser( $response['access_token'] );
+            $discordMember = \IPS\discord\Api\Member::create( $response['access_token'] )->getCurrent();
 
-            if ( !$userData['verified'] )
+            if ( !$discordMember['verified'] )
             {
                 \IPS\Output::i()->error( 'discord_not_verified', '' );
             }
 
             /* Set member properties */
             $memberProperties = [
-                'discord_id' => $userData['id'],
+                'discord_id' => $discordMember['id'],
                 'discord_token' => $response['access_token']
             ];
 
@@ -93,19 +95,23 @@ class _Discord extends LoginAbstract
 
             /* Find or create member */
             $member = $this->createOrUpdateAccount(
-                $member ?: \IPS\Member::load( $userData['id'], 'discord_id' ),
+                $member ?: \IPS\Member::load( $discordMember['id'], 'discord_id' ),
                 $memberProperties,
-                $this->settings['real_name'] ? $userData['username'] : NULL,
-                $userData['email'],
+                $this->settings['real_name'] ? $discordMember['username'] : NULL,
+                $discordMember['email'],
                 $response['access_token'],
                 array(
                     'photo' => TRUE,
                 )
             );
 
-            /* Sync user */
-            $guildMember = new \IPS\discord\Api\GuildMember;
-            $guildMember->update( $member );
+            // TODO: helper method
+            \IPS\discord\Api\Guild::primary()->modifyMember(
+                $member->discord_id,
+                [
+                    'roles' => (new \IPS\discord\Util\Member( $member ))->shouldHaveRoles()->toArray()
+                ]
+            );
 
             /* Return */
             return $member;
@@ -125,16 +131,19 @@ class _Discord extends LoginAbstract
      */
     public static function link( \IPS\Member $member, $details )
     {
-        /* Get user data */
-        $discordMember = new \IPS\discord\Api\Member;
-        $userData = $discordMember->getDiscordUser( $details );
+        $userData = \IPS\discord\Api\Member::create( $details )->getCurrent();
+
         $member->discord_id = $userData['id'];
         $member->discord_token = $details;
         $member->save();
 
-        /* Sync member */
-        $guildMember = new \IPS\discord\Api\GuildMember;
-        $guildMember->update( $member );
+        // TODO: helper method
+        \IPS\discord\Api\Guild::primary()->modifyMember(
+            $member->discord_id,
+            [
+                'roles' => (new \IPS\discord\Util\Member( $member ))->shouldHaveRoles()->toArray()
+            ]
+        );
     }
 
     /**
@@ -188,12 +197,12 @@ class _Discord extends LoginAbstract
         $params = [
             'response_type'	=> 'code',
             'client_id' => \IPS\Settings::i()->discord_client_id,
-            'redirect_uri'	=> ( (string) \IPS\Http\Url::internal( 'applications/discord/interface/oauth/auth.php', 'none' ) ),
-            'scope' => ( \IPS\discord\Api::SCOPE_EMAIL . ' ' . \IPS\discord\Api::SCOPE_IDENTIFY ),
-            'state' => ( $base . '-' . \IPS\Session::i()->csrfKey . '-' . ( $destination ? base64_encode( $destination ) : '' ) )
+            'redirect_uri'	=> (string) \IPS\Http\Url::internal( 'applications/discord/interface/oauth/auth.php', 'none' ),
+            'scope' => 'email identify',
+            'state' => $base . '-' . \IPS\Session::i()->csrfKey . '-' . ( $destination ? base64_encode( $destination ) : '' )
         ];
 
-        return \IPS\Http\Url::external( \IPS\discord\Api::OAUTH2_URL . 'authorize' )->setQueryString( $params );
+        return \IPS\Http\Url::external( 'https://discordapp.com/api/v6/oauth2/authorize' )->setQueryString( $params );
     }
 
     /**

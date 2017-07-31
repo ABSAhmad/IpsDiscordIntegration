@@ -24,16 +24,17 @@ class discord_hook_post extends _HOOK_CLASS_
      */
     public static function create( $item, $comment, $first=false, $guestName=NULL, $incrementPostCount=NULL, $member=NULL, \IPS\DateTime $time=NULL, $ipAddress=NULL, $hiddenStatus=NULL )
     {
-        /** @var \IPS\forums\Topic\Post $comment */
-        $comment = call_user_func_array( 'parent::create', func_get_args() );
+        /** @var \IPS\forums\Topic\Post $post */
+        $post = call_user_func_array( 'parent::create', func_get_args() );
 
-        if ( !$first && $item instanceof \IPS\forums\Topic && ( $comment->container()->discord_post_posts || ( $comment->hidden() && $comment->container()->discord_post_unapproved_posts ) ) )
+        if ( !$first && $item instanceof \IPS\forums\Topic && ( $post->container()->discord_post_posts || ( $post->hidden() && $post->container()->discord_post_unapproved_posts ) ) )
         {
-            $channel = new \IPS\discord\Api\Channel;
-            $channel->postContentItem( $comment, $member );
+            $message = \IPS\discord\Util\Message::fromForumPost($post, $member);
+            $channel = new \IPS\discord\Api\Channel();
+            $channel->message($message->getMessage(), $message->getChannelId());
         }
 
-        return $comment;
+        return $post;
     }
 
     /**
@@ -49,8 +50,9 @@ class discord_hook_post extends _HOOK_CLASS_
 
         if ( $approving && $this->container()->discord_post_posts )
         {
-            $channel = new \IPS\discord\Api\Channel;
-            $channel->postContentItem( $this );
+            $message = \IPS\discord\Util\Message::fromForumPost($this, $member);
+            $channel = new \IPS\discord\Api\Channel();
+            $channel->message($message->getMessage(), $message->getChannelId());
         }
 
         return $return;

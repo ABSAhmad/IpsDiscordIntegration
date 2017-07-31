@@ -48,7 +48,7 @@ class _settings extends \IPS\Dispatcher\Controller
         if ( $settings->discord_bot_token )
         {
             $form->addButton( 'discord_handshake', 'button', NULL, 'ipsButton ipsButton_alternate', [
-                'data-controller' => "discord.admin.settings.handshake",
+                'data-controller' => 'discord.admin.settings.handshake',
                 'data-token' => $settings->discord_bot_token
             ] );
         }
@@ -88,12 +88,12 @@ class _settings extends \IPS\Dispatcher\Controller
         {
             if ( empty( $settings->discord_guild_id ) || empty( $values['discord_guild_id'] ) )
             {
-                $redirect = \IPS\Http\Url::external( \IPS\discord\Api::OAUTH2_URL . 'authorize' )
+                $redirect = \IPS\Http\Url::external( 'https://discordapp.com/api/v6/oauth2/authorize' )
                     ->setQueryString([
                         'client_id' => $values['discord_client_id'],
-                        'permissions' => \IPS\discord\Api::PERM_ADMINISTRATOR,
+                        'permissions' => 0x00000008,
                         'response_type' => 'code',
-                        'scope' => \IPS\discord\Api::SCOPE_BOT,
+                        'scope' => 'bot',
                         'redirect_uri' => $redirectUris[0]
                     ]);
             }

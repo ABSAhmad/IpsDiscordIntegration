@@ -43,7 +43,7 @@ class discord_hook_member extends _HOOK_CLASS_
                 $group = \IPS\Member\Group::load( $groupId );
 
                 /** @noinspection PhpUndefinedFieldInspection */
-                if ( $group->discord_role !== 0 )
+                if ( $group->discord_role != 0 )
                 {
                     /** @noinspection PhpUndefinedFieldInspection */
                     $roleIds[] = $group->discord_role;
@@ -67,6 +67,14 @@ class discord_hook_member extends _HOOK_CLASS_
     }
 
     /**
+     * @return bool
+     */
+    public function get_discord_id()
+    {
+        return (int) $this->_data['discord_id'];
+    }
+
+    /**
      * Set banned
      *
      * @param	string	$value	Value
@@ -76,23 +84,19 @@ class discord_hook_member extends _HOOK_CLASS_
     {
         call_user_func_array( 'parent::set_temp_ban', func_get_args() );
 
-        $value = (int) $value;
-
         /** @noinspection PhpUndefinedFieldInspection */
         if ( \IPS\Settings::i()->discord_sync_bans )
         {
-            $guildMember = new \IPS\discord\Api\GuildMember;
+            $guild = \IPS\discord\Api\Guild::primary();
 
-            if ( $value === 0 )
+            if ( (int) $value === 0 )
             {
-                /** @noinspection PhpParamsInspection */
-                $guildMember->modifyBanState( $this, true );
+                $guild->unbanMember( $this->discord_id );
+
+                return;
             }
-            else
-            {
-                /** @noinspection PhpParamsInspection */
-                $guildMember->modifyBanState( $this );
-            }
+
+            $guild->banMember( $this->discord_id );
         }
     }
 }

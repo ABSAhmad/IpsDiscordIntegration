@@ -25,6 +25,9 @@ namespace IPS\discord;
  * @TODO: (User)Setting: Send notifications on Discord?
  * @TODO: (User)Setting: Send notifications for approved posts.
  */
+
+require_once __DIR__ . '/vendor/autoload.php';
+
 class _Application extends \IPS\Application
 {
     /**

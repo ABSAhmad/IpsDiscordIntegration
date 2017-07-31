@@ -2,157 +2,183 @@
 
 namespace IPS\discord\Api;
 
+/* To prevent PHP errors (extending class does not exist) revealing path */
+if ( !defined( '\IPS\SUITE_UNIQUE_KEY' ) )
+{
+    header( ( isset( $_SERVER['SERVER_PROTOCOL'] ) ? $_SERVER['SERVER_PROTOCOL'] : 'HTTP/1.0' ) . ' 403 Forbidden' );
+    exit;
+}
+
 /**
- * Class Guild
+ * Class _Guild
  *
  * @package IPS\discord\Api
+ *
+ * Handles any requests that are related to a discord guild.
  */
-class _Guild extends \IPS\discord\Api\AbstractResponse
+class _Guild extends \IPS\discord\Api
 {
-    /**
-     * Get information from guild, which information depends on the passed $uri.
-     *
-     * @param string $uri
-     * @return array
-     */
-    public function getInformation( $uri )
-    {
-        /** @noinspection PhpUndefinedFieldInspection */
-        $this->api->setUrl( \IPS\discord\Api::API_URL )
-            ->setAuthType( \IPS\discord\Api::AUTH_TYPE_BOT )
-            ->setUri( 'guilds/{guild.id}/' . $uri )
-            ->setMethod( 'get' )
-            ->setParams([
-                'limit' => 500
-            ]);
+    protected $guildId;
 
-        return $this->handleApi();
+    /**
+     * Sets up the connection to discord with the default guild.
+     *
+     * @param string|null $token
+     *
+     * @return static
+     */
+    public static function primary($token = null)
+    {
+        $guild = new static(compact('token'));
+
+        return $guild->setGuildId( (int) \IPS\Settings::i()->discord_guild_id );
     }
 
     /**
-     * Get guild member for the according IPS member.
+     * Retrieves all channels for the given guild or the default one.
      *
-     * @param \IPS\Member $member
-     * @return array|NULL
+     * @param int|null $guildId
+     *
+     * @return \Illuminate\Support\Collection
      */
-    public function getMember( \IPS\Member $member )
+    public function channels($guildId = null)
     {
-        /** @noinspection PhpUndefinedFieldInspection */
-        if ( !$member->discord_id )
-        {
-            return NULL;
-        }
-
-        /** @noinspection PhpUndefinedFieldInspection */
-        return $this->getInformation( "members/{$member->discord_id}" );
+        return collect($this->discord->guild->getGuildChannels([
+            'guild.id' => (int) $guildId ?: $this->guildId
+        ]));
     }
 
     /**
-     * Get guild roles.
+     * Retrieves all text channels for the given guild or the default one.
      *
-     * @return array
+     * @param int|null $guildId
+     *
+     * @return \Illuminate\Support\Collection
      */
-    public function getRoles()
+    public function textChannels($guildId = null)
     {
-        $roles = $this->getInformation( 'roles' );
-
-        return $this->formatRoles( $roles );
+        return $this->channels($guildId)->reject(function (array $channel) {
+            return $channel['type'] === 'voice';
+        });
     }
 
     /**
-     * Get roles in the format: 'id' => 'name'.
-     * Used in group settings.
+     * Get the guild member for the given user id.
      *
-     * @return array
+     * @param int $userId
+     * @param int|null $guildId
+     *
+     * @return \RestCord\Model\Guild\GuildMember
      */
-    public function getRolesOnlyName()
+    public function getMember($userId, $guildId = null)
     {
-        $roles = $this->getRoles();
-
-        foreach ( $roles as $id => &$role )
-        {
-            if ( $role['name'] !== '@everyone' )
-            {
-                $role = $role['name'];
-            }
-        }
-        unset( $role );
-
-        $roles[0] = '';
-        asort( $roles, SORT_ASC );
-
-        return $roles;
+        return $this->discord->guild->getGuildMember([
+            'user.id' => $userId,
+            'guild.id' => (int) $guildId ?: $this->guildId
+        ]);
     }
 
     /**
-     * Get guild channels.
+     * Ban the given user from the guild.
      *
-     * @return array
+     * @param int $userId
+     * @param int|null $guildId
+     *
+     * @return \Illuminate\Support\Collection
      */
-    public function getChannels()
+    public function banMember($userId, $guildId = null)
     {
-        $channels = $this->getInformation( 'channels' );
-
-        return $this->formatChannels( $channels );
+        return collect($this->discord->guild->createGuildBan([
+            'user.id' => $userId,
+            'guild.id' => (int) $guildId ?: $this->guildId
+        ]));
     }
 
     /**
-     * Get channels in the format: 'id' => 'name'.
-     * Used in forum settings.
+     * Unban the given user from the guild.
      *
-     * @return array
+     * @param int $userId
+     * @param int|null $guildId
+     *
+     * @return \Illuminate\Support\Collection
      */
-    public function getChannelsOnlyName()
+    public function unbanMember($userId, $guildId = null)
     {
-        $channels = $this->getChannels();
-
-        foreach ( $channels as $id => &$channel )
-        {
-            $channel = $channel['name'];
-        }
-        unset( $channel );
-
-        $channels[0] = '';
-        asort( $channels, SORT_ASC );
-
-        return $channels;
+        return collect($this->discord->guild->removeGuildBan([
+            'user.id' => $userId,
+            'guild.id' => (int) $guildId ?: $this->guildId
+        ]));
     }
 
     /**
-     * Format guild roles to have the role id as array key and remove the @everyone role.
+     * Modify the given user with the given options.
      *
-     * @param array $roles
-     * @return array
+     * @param int $userId
+     * @param array $options
+     * @param int|null $guildId
+     *
+     * @return \Illuminate\Support\Collection
      */
-    protected function formatRoles( array $roles )
+    public function modifyMember($userId, array $options, $guildId = null)
     {
-        foreach ( $roles as $key => $role )
-        {
-            if ( $role['name'] === '@everyone' || $role['managed'] === TRUE )
-            {
-                unset( $roles[$key] );
-            }
-        }
+        $options = array_merge([
+            'user.id' => $userId,
+            'guild.id' => (int) $guildId ?: $this->guildId
+        ], $options);
 
-        return \IPS\discord\Api\Helper::formatDiscordArray( $roles );
+        return collect($this->discord->guild->modifyGuildMember($options));
     }
 
     /**
-     * Format guild roles to have the role id as array key and remove the @everyone role.
+     * Remove the given user from the guild.
      *
-     * @param array $channels
-     * @return array
+     * @param int $userId
+     * @param int|null $guildId
+     *
+     * @return \Illuminate\Support\Collection
      */
-    protected function formatChannels( array $channels )
+    public function removeMember($userId, $guildId = null)
     {
-        foreach ( $channels as $key => $channel )
-        {
-            if ( $channel['type'] === 'voice' )
-            {
-                unset( $channels[$key] );
-            }
-        }
+        return collect($this->discord->guild->removeGuildMember([
+            'user.id' => $userId,
+            'guild.id' => (int) $guildId ?: $this->guildId
+        ]));
+    }
 
-        return \IPS\discord\Api\Helper::formatDiscordArray( $channels );
+    /**
+     * Get all roles for the guild.
+     *
+     * @param int|null $guildId
+     *
+     * @return \Illuminate\Support\Collection
+     */
+    public function roles($guildId = null)
+    {
+        return collect($this->discord->guild->getGuildRoles([
+            'guild.id' => $guildId ?: $this->guildId
+        ]));
+    }
+
+    /**
+     * Set the ID of the default guild that should be used as a fallback when there
+     * is no other ID specified in a specific method call.
+     *
+     * @param int $guildId
+     *
+     * @return static
+     */
+    public function setGuildId($guildId)
+    {
+        $this->guildId = (int) $guildId;
+
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    protected function getResourceName()
+    {
+        return 'guild';
     }
 }

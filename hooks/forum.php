@@ -18,8 +18,11 @@ class discord_hook_forum extends _HOOK_CLASS_
     {
         parent::form( $form );
 
-        $guild = new \IPS\discord\Api\Guild;
-        $channels = $guild->getChannelsOnlyName();
+        $guild = \IPS\discord\Api\Guild::primary();
+        // TODO: extract this into an function
+        $channels = $guild->textChannels()->mapWithKeys(function (array $channel) {
+            return [$channel['id'] => $channel['name']];
+        })->toArray();
 
         $form->addHeader( 'discord_channels' );
         $form->add(

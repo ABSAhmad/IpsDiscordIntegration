@@ -19,8 +19,9 @@ class discord_hook_downloadsFile extends _HOOK_CLASS_
     {
         call_user_func_array( 'parent::processAfterCreate', func_get_args() );
 
-        $channel = new \IPS\discord\Api\Channel;
-        $channel->postContentItem( $this );
+        $message = \IPS\discord\Util\Message::fromDownloadsFile($this);
+        $channel = new \IPS\discord\Api\Channel();
+        $channel->message($message->getMessage(), $message->getChannelId());
     }
 
     /**
@@ -36,8 +37,9 @@ class discord_hook_downloadsFile extends _HOOK_CLASS_
 
         if ( $approving )
         {
-            $channel = new \IPS\discord\Api\Channel;
-            $channel->postContentItem( $this );
+            $message = \IPS\discord\Util\Message::fromDownloadsFile($this);
+            $channel = new \IPS\discord\Api\Channel();
+            $channel->message($message->getMessage(), $message->getChannelId());
         }
     }
 }
