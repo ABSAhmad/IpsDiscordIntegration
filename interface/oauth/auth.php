@@ -1,5 +1,14 @@
 <?php
 
+/**
+ * This file is part of Discord Integration.
+ *
+ * (c) Ahmad El-Bardan <ahmadelbardan@hotmail.de>
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
 require_once str_replace( 'applications/discord/interface/oauth/auth.php', '', str_replace( '\\', '/', __FILE__ ) ) . 'init.php';
 \IPS\Session\Front::i();
 

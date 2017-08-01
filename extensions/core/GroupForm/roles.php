@@ -1,13 +1,12 @@
 <?php
+
 /**
- * @brief		Admin CP Group Form
- * @author		<a href='http://www.invisionpower.com'>Invision Power Services, Inc.</a>
- * @copyright	(c) 2001 - 2016 Invision Power Services, Inc.
- * @license		http://www.invisionpower.com/legal/standards/
- * @package		IPS Community Suite
- * @subpackage	Discord Integration
- * @since		29 Jan 2017
- * @version		SVN_VERSION_NUMBER
+ * This file is part of Discord Integration.
+ *
+ * (c) Ahmad El-Bardan <ahmadelbardan@hotmail.de>
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
  */
 
 namespace IPS\discord\extensions\core\GroupForm;
