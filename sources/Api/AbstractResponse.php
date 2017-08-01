@@ -54,9 +54,9 @@ abstract class _AbstractResponse
     {
         $response = $this->api->send();
 
-        $statusCode = $response->httpResponseCode;
+        $statusCode = (int) $response->httpResponseCode;
 
-        if ( in_array( $statusCode, $this->successCodes ) ) {
+        if ( in_array( $statusCode, $this->successCodes, true ) ) {
             return $response->decodeJson();
         }
 
@@ -86,6 +86,7 @@ abstract class _AbstractResponse
      * @throws Exception\TooManyRequestsException
      * @throws Exception\UnauthorizedException
      * @throws Exception\UnknownErrorException
+     * @throws Exception\ServerErrorException
      */
     protected function throwException( $statusCode )
     {
@@ -110,7 +111,7 @@ abstract class _AbstractResponse
     {
         $stringStatusCode = (string) $statusCode;
 
-        if ( mb_substr( $stringStatusCode, 0, 1 ) !== '5' || $statusCode === 502 )
+        if ( $statusCode === 502 || mb_substr( $stringStatusCode, 0, 1 ) !== '5' )
         {
             return;
         }

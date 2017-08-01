@@ -34,6 +34,31 @@ class _Channel extends \IPS\discord\Api\AbstractResponse
     }
 
     /**
+     * Send a message to a member.
+     * Used for notifications and watched content.
+     *
+     * @param \IPS\Member $member
+     * @param string $content
+     * @return array|NULL
+     */
+    public function postToMember( \IPS\Member $member, $content)
+    {
+        $this->api->setUrl( \IPS\discord\Api::API_URL )
+            ->setAuthType( \IPS\discord\Api::AUTH_TYPE_BOT )
+            ->setUri( 'users/@me/channels' )
+            ->setMethod(
+                'post' )
+            ->setParams(json_encode([
+                'recipient_id' => $member->discord_id
+            ]));
+
+        $response = $this->handleApi();
+        $channelId = $response['recipient_id'];
+
+        return $this->post($content, $channelId);
+    }
+
+    /**
      * Post given message to the given channel.
      *
      * @param string $content
