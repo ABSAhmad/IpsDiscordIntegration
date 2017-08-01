@@ -32,23 +32,7 @@ class _Upgrade
 	{
 	    /* Make sure we have all needed attributes. */
         \IPS\discord\Util::addAllAttributes();
-
-        /* Copy to /applications/core/sources/ProfileSync/ */
-        $profileSync = \copy(
-            \IPS\ROOT_PATH . '/applications/discord/sources/MoveOnInstall/ProfileSync/Discord.php',
-            \IPS\ROOT_PATH . '/applications/core/sources/ProfileSync/Discord.php'
-        );
-
-        /* Copy to /system/Login/ */
-        $systemLogin = \copy(
-            \IPS\ROOT_PATH . '/applications/discord/sources/MoveOnInstall/Login/Discord.php',
-            \IPS\ROOT_PATH . '/system/Login/Discord.php'
-        );
-
-        if ( !$profileSync || !$systemLogin )
-        {
-            throw new \OutOfRangeException( 'Copying required file failed.' );
-        }
+        \IPS\discord\Util::updateLoginHandlerFiles();
 
 		return TRUE;
 	}

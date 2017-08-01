@@ -9,7 +9,7 @@
  * file that was distributed with this source code.
  */
 
-namespace IPS\discord\setup\upg_10008;
+namespace IPS\discord\setup\upg_working;
 
 /* To prevent PHP errors (extending class does not exist) revealing path */
 if ( !defined( '\IPS\SUITE_UNIQUE_KEY' ) )
@@ -19,23 +19,18 @@ if ( !defined( '\IPS\SUITE_UNIQUE_KEY' ) )
 }
 
 /**
- * 1.0.0 Beta 6 Upgrade Code
+ * {version_human} Upgrade Code
  */
 class _Upgrade
 {
+    /**
+     * @return array If returns TRUE, upgrader will proceed to next step. If it returns any other value, it will set this as the value of the 'extra' GET parameter and rerun this step (useful for loops)
+     */
     public function step1()
     {
-        /**
-         * Fix: "Permission too open" error.
-         * Chmod files that need to be directly called to 644.
-         * Because on some server configurations those are set to 666 by default and thus error out.
-         */
-        \chmod(
-            \IPS\ROOT_PATH . '/applications/discord/interface/oauth/auth.php',
-            \IPS\FILE_PERMISSION_NO_WRITE
-        );
-
         \IPS\discord\Util::updateLoginHandlerFiles();
+
+        \IPS\Db::i()->delete('core_tasks', ['app = ? AND `key` = ?', 'discord', 'syncGroups']);
 
         return TRUE;
     }

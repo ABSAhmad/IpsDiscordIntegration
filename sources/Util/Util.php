@@ -165,6 +165,34 @@ class _Util
     }
 
     /**
+     * Copies the needed files for the login handler to their correct location.
+     * Unfortunately that is the only way to provide a login handler right now.
+     * Hopefully this is something that will be changed by IPS in the future.
+     *
+     * @throws \OutOfRangeException If copying the needed files fails.
+     *
+     * @return bool
+     */
+    public static function updateLoginHandlerFiles()
+    {
+        $profileSync = \copy(
+            \IPS\ROOT_PATH . '/applications/discord/sources/Stubs/ProfileSync/Discord.php',
+            \IPS\ROOT_PATH . '/applications/core/sources/ProfileSync/Discord.php'
+        );
+        $systemLogin = \copy(
+            \IPS\ROOT_PATH . '/applications/discord/sources/Stubs/Login/Discord.php',
+            \IPS\ROOT_PATH . '/system/Login/Discord.php'
+        );
+
+        if ( !$profileSync || !$systemLogin )
+        {
+            throw new \OutOfRangeException( 'Copying required file(s) failed.' );
+        }
+
+        return true;
+    }
+
+    /**
      * Add column. Ignore if it already exists.
      *
      * @param string $table
