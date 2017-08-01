@@ -18,6 +18,9 @@ if ( !defined( '\IPS\SUITE_UNIQUE_KEY' ) )
  */
 class _Channel extends \IPS\discord\Api
 {
+    const TYPE_TEXT = 0;
+    const TYPE_VOICE = 2;
+
     /**
      * Sends a message to the given channel.
      *

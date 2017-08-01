@@ -18,6 +18,9 @@ if ( !defined( '\IPS\SUITE_UNIQUE_KEY' ) )
  */
 class _Guild extends \IPS\discord\Api
 {
+    /**
+     * @var int $guildId
+     */
     protected $guildId;
 
     /**
@@ -45,7 +48,9 @@ class _Guild extends \IPS\discord\Api
     {
         return collect($this->discord->guild->getGuildChannels([
             'guild.id' => (int) $guildId ?: $this->guildId
-        ]));
+        ]))->map(function ($channel) {
+            return (array) $channel;
+        });
     }
 
     /**
@@ -58,7 +63,7 @@ class _Guild extends \IPS\discord\Api
     public function textChannels($guildId = null)
     {
         return $this->channels($guildId)->reject(function (array $channel) {
-            return $channel['type'] === 'voice';
+            return $channel['type'] === \IPS\discord\Api\Channel::TYPE_VOICE;
         });
     }
 
