@@ -30,9 +30,10 @@ class discord_hook_topic extends _HOOK_CLASS_
 
         if ( $this->container()->discord_post_topics || ( $this->hidden() && $this->container()->discord_post_unapproved_topics ) )
         {
-            $message = \IPS\discord\Util\Message::fromForumTopic($this);
             $channel = new \IPS\discord\Api\Channel();
-            $channel->message($message->getMessage(), $message->getChannelId());
+            $channel->message(
+                \IPS\discord\Model\Message::fromForumTopic($this)
+            );
         }
 
         return $return;
@@ -51,9 +52,10 @@ class discord_hook_topic extends _HOOK_CLASS_
 
         if ( $approving && $this->container()->discord_post_topics )
         {
-            $message = \IPS\discord\Util\Message::fromForumTopic($this);
             $channel = new \IPS\discord\Api\Channel();
-            $channel->message($message->getMessage(), $message->getChannelId());
+            $channel->message(
+                \IPS\discord\Model\Message::fromForumTopic($this)
+            );
         }
 
         return $return;

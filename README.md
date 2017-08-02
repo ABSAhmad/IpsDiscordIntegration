@@ -57,4 +57,4 @@ See also the list of [contributors](https://github.com/ABSAhmad/IpsDiscordIntegr
 
 ## License
 
-This project is licensed under the GNUv3 License - see the [LICENSE.md](https://github.com/ABSAhmad/IpsDiscordIntegration/blob/master/LICENSE.md) file for details
+This project is licensed under the GNUv3 License - see the [LICENSE](https://github.com/ABSAhmad/IpsDiscordIntegration/blob/master/LICENSE) file for details

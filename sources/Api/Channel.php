@@ -33,17 +33,16 @@ class _Channel extends \IPS\discord\Api
     /**
      * Sends a message to the given channel.
      *
-     * @param string $message  The message to be sent.
-     * @param int $channelId
+     * @param \IPS\discord\Model\Message|string $message The message to be sent.
      * @param array $options
      *
      * @return \RestCord\Model\Channel\Message
      */
-    public function message($message, $channelId, array $options = [])
+    public function message(\IPS\discord\Model\Message $message, array $options = [])
     {
         $options = array_merge([
-            'channel.id' => (int) $channelId,
-            'content' => $message
+            'channel.id' => $message->getChannelId(),
+            'content' => $message->getMessage()
         ], $options);
 
         return $this->discord->channel->createMessage($options);

@@ -9,7 +9,7 @@
  * file that was distributed with this source code.
  */
 
-namespace IPS\discord\Util;
+namespace IPS\discord\Model;
 
 /* To prevent PHP errors (extending class does not exist) revealing path */
 if ( !defined( '\IPS\SUITE_UNIQUE_KEY' ) )
@@ -21,7 +21,7 @@ if ( !defined( '\IPS\SUITE_UNIQUE_KEY' ) )
 /**
  * Class _Message
  *
- * @package IPS\discord\Util
+ * @package IPS\discord\Model
  */
 class _Message
 {
@@ -84,11 +84,11 @@ class _Message
     }
 
     /**
-     * @return string
+     * @return int
      */
     public function getChannelId()
     {
-        return $this->channelId;
+        return (int) $this->channelId;
     }
 
     /**

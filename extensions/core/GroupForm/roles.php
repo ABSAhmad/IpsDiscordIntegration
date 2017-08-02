@@ -34,18 +34,10 @@ class _roles
     {
         try
         {
-            $guild = \IPS\discord\Api\Guild::primary();
-
-            $roles = $guild->roles()->reject(function (array $role) {
-                return $role['name'] == '@everyone';
-            })->mapWithKeys(function ($role) {
-                return [$role['id'] => $role['name']];
-            })->put(0, '')->sort()->toArray();
-
             /** @noinspection PhpUndefinedFieldInspection */
             $form->add(
                 new \IPS\Helpers\Form\Select( 'discord_role', $group->discord_role ?: 0, TRUE, [
-                    'options' => $roles
+                    'options' => \IPS\discord\Api\Guild::primary()->roles()->prepareForForm()->toArray()
                 ] )
             );
         }

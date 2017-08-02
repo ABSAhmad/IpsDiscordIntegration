@@ -28,9 +28,7 @@ class discord_hook_calendarForm extends _HOOK_CLASS_
         parent::form( $form );
 
         $guild = \IPS\discord\Api\Guild::primary();
-        $channels = $guild->textChannels()->mapWithKeys(function (array $channel) {
-            return [$channel['id'] => $channel['name']];
-        })->toArray();
+        $channels = $guild->textChannels()->prepareForForm()->toArray();
 
         $form->addHeader( 'discord_channels' );
         $form->add(

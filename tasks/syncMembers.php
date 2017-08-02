@@ -49,7 +49,7 @@ class _syncMembers extends \IPS\Task
         {
             try
             {
-                $discordMemberUtility = new \IPS\discord\Util\Member( $member );
+                $discordMemberUtility = new \IPS\discord\Model\Member( $member );
                 $guild->modifyMember(
                     $member->discord_id,
                     [

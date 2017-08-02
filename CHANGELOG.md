@@ -2,6 +2,13 @@
 
 ## [1.2.0] - Unreleased
 
+### Added
+- Added support for automatically joining new users into the guild.
+
+### Fixed
+- Fixed several type errors.
+- Fixed a bug where a member could be added multiple times if they associate their discord twice or more times.
+
 ## [1.2.0 Alpha 2] - 2017-08-01
 
 ### Fixed

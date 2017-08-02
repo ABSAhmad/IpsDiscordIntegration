@@ -80,7 +80,7 @@ class _Discord extends ProfileSyncAbstract
             \IPS\discord\Api\Guild::primary()->modifyMember(
                 $this->member->discord_id,
                 [
-                    'roles' => ( new \IPS\discord\Util\Member( $this->member ) )->shouldHaveRoles()->toArray()
+                    'roles' => ( new \IPS\discord\Model\Member( $this->member ) )->shouldHaveRoles()->toArray()
                 ]
             );
         }

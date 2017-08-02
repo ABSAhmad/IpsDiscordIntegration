@@ -29,8 +29,9 @@ class discord_hook_calendarEvent extends _HOOK_CLASS_
         call_user_func_array( 'parent::processAfterCreate', func_get_args() );
 
         $channel = new \IPS\discord\Api\Channel();
-        $message = \IPS\discord\Util\Message::fromCalendarEvent($this);
-        $channel->message($message->getMessage(), $message->getChannelId());
+        $channel->message(
+            \IPS\discord\Model\Message::fromCalendarEvent($this)
+        );
     }
 
     /**
@@ -47,8 +48,9 @@ class discord_hook_calendarEvent extends _HOOK_CLASS_
         if ( $approving )
         {
             $channel = new \IPS\discord\Api\Channel();
-            $message = \IPS\discord\Util\Message::fromCalendarEvent($this);
-            $channel->message($message->getMessage(), $message->getChannelId());
+            $channel->message(
+                \IPS\discord\Model\Message::fromCalendarEvent($this)
+            );
         }
     }
 }

@@ -9,7 +9,7 @@
  * file that was distributed with this source code.
  */
 
-namespace IPS\discord\setup\upg_working;
+namespace IPS\discord\setup\upg_10105;
 
 /* To prevent PHP errors (extending class does not exist) revealing path */
 if ( !defined( '\IPS\SUITE_UNIQUE_KEY' ) )
@@ -19,7 +19,7 @@ if ( !defined( '\IPS\SUITE_UNIQUE_KEY' ) )
 }
 
 /**
- * {version_human} Upgrade Code
+ * 1.2.0 Alpha 3 Upgrade Code
  */
 class _Upgrade
 {

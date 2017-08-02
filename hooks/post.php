@@ -38,9 +38,10 @@ class discord_hook_post extends _HOOK_CLASS_
 
         if ( !$first && $item instanceof \IPS\forums\Topic && ( $post->container()->discord_post_posts || ( $post->hidden() && $post->container()->discord_post_unapproved_posts ) ) )
         {
-            $message = \IPS\discord\Util\Message::fromForumPost($post, $member);
             $channel = new \IPS\discord\Api\Channel();
-            $channel->message($message->getMessage(), $message->getChannelId());
+            $channel->message(
+                \IPS\discord\Model\Message::fromForumPost($post, $member)
+            );
         }
 
         return $post;
@@ -59,9 +60,10 @@ class discord_hook_post extends _HOOK_CLASS_
 
         if ( $approving && $this->container()->discord_post_posts )
         {
-            $message = \IPS\discord\Util\Message::fromForumPost($this, $member);
             $channel = new \IPS\discord\Api\Channel();
-            $channel->message($message->getMessage(), $message->getChannelId());
+            $channel->message(
+                \IPS\discord\Model\Message::fromForumPost($this, $member)
+            );
         }
 
         return $return;

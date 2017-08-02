@@ -104,7 +104,7 @@ class _Discord extends LoginAbstract
 
             /* Find or create member */
             $member = $this->createOrUpdateAccount(
-                $member ?: \IPS\Member::load( $discordMember['id'], 'discord_id' ),
+                $member ?: $this->findMember($discordMember),
                 $memberProperties,
                 $this->settings['real_name'] ? $discordMember['username'] : NULL,
                 $discordMember['email'],
@@ -114,15 +114,27 @@ class _Discord extends LoginAbstract
                 )
             );
 
-            // TODO: helper method
-            \IPS\discord\Api\Guild::primary()->modifyMember(
-                $member->discord_id,
-                [
-                    'roles' => (new \IPS\discord\Util\Member( $member ))->shouldHaveRoles()->toArray()
-                ]
-            );
+            $guild = \IPS\discord\Api\Guild::primary();
 
-            /* Return */
+            try {
+                $guild->getMember($member->discord_id);
+
+                $guild->modifyMember(
+                    $member->discord_id,
+                    [
+                        'roles' => (new \IPS\discord\Model\Member( $member ))->shouldHaveRoles()->toArray()
+                    ]
+                );
+            } catch (\GuzzleHttp\Command\Exception\CommandException $e) {
+                $guild->addMember(
+                    $member->discord_id,
+                    $response['access_token'],
+                    [
+                        'roles' => (new \IPS\discord\Model\Member( $member ))->shouldHaveRoles()->toArray()
+                    ]
+                );
+            }
+
             return $member;
         }
         catch ( \IPS\Http\Request\Exception $e )
@@ -150,7 +162,7 @@ class _Discord extends LoginAbstract
         \IPS\discord\Api\Guild::primary()->modifyMember(
             $member->discord_id,
             [
-                'roles' => (new \IPS\discord\Util\Member( $member ))->shouldHaveRoles()->toArray()
+                'roles' => (new \IPS\discord\Model\Member( $member ))->shouldHaveRoles()->toArray()
             ]
         );
     }
@@ -207,7 +219,7 @@ class _Discord extends LoginAbstract
             'response_type'	=> 'code',
             'client_id' => \IPS\Settings::i()->discord_client_id,
             'redirect_uri'	=> (string) \IPS\Http\Url::internal( 'applications/discord/interface/oauth/auth.php', 'none' ),
-            'scope' => 'email identify',
+            'scope' => 'email identify guilds.join',
             'state' => $base . '-' . \IPS\Session::i()->csrfKey . '-' . ( $destination ? base64_encode( $destination ) : '' )
         ];
 
@@ -224,5 +236,22 @@ class _Discord extends LoginAbstract
     public function canChange( $type, \IPS\Member $member )
     {
         return FALSE;
+    }
+
+    /**
+     * @param \Illuminate\Support\Collection $discordMember
+     *
+     * @return \IPS\Member
+     */
+    protected function findMember($discordMember)
+    {
+        $member = \IPS\Member::load($discordMember['id'], 'discord_id');
+
+        if ( !$member->member_id )
+        {
+            return \IPS\Member::load($discordMember['email'], 'email');
+        }
+
+        return $member;
     }
 }

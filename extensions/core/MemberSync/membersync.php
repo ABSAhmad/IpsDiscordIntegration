@@ -40,7 +40,7 @@ class _membersync
 
         try
         {
-            $discordMemberUtil = new \IPS\discord\Util\Member(
+            $discordMemberUtil = new \IPS\discord\Model\Member(
                 $this->addTheGroupChangesToTheMember( clone $member, $changes )
             );
 

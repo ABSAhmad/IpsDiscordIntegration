@@ -67,13 +67,15 @@ class _Guild extends \IPS\discord\Api
      *
      * @param int|null $guildId
      *
-     * @return \Illuminate\Support\Collection
+     * @return \IPS\discord\Model\Discord\Channels
      */
     public function textChannels($guildId = null)
     {
-        return $this->channels($guildId)->reject(function (array $channel) {
-            return $channel['type'] === \IPS\discord\Api\Channel::TYPE_VOICE;
-        });
+        return \IPS\discord\Model\Discord\Channels::create(
+            $this->channels($guildId)->reject(function (array $channel) {
+                return $channel['type'] === \IPS\discord\Api\Channel::TYPE_VOICE;
+            })
+        );
     }
 
     /**
@@ -90,6 +92,62 @@ class _Guild extends \IPS\discord\Api
             'user.id' => $userId,
             'guild.id' => (int) $guildId ?: $this->guildId
         ]);
+    }
+
+    /**
+     * Add the given user to the guild.
+     *
+     * @param int $userId
+     * @param string $accessToken
+     * @param array $options
+     * @param int|null $guildId
+     *
+     * @return \Illuminate\Support\Collection
+     */
+    public function addMember($userId, $accessToken, array $options = [], $guildId = null)
+    {
+        $options = array_merge([
+            'user.id' => $userId,
+            'guild.id' => (int) $guildId ?: $this->guildId,
+            'access_token' => $accessToken
+        ], $options);
+
+        return collect($this->discord->guild->addGuildMember($options));
+    }
+
+    /**
+     * Remove the given user from the guild.
+     *
+     * @param int $userId
+     * @param int|null $guildId
+     *
+     * @return \Illuminate\Support\Collection
+     */
+    public function removeMember($userId, $guildId = null)
+    {
+        return collect($this->discord->guild->removeGuildMember([
+            'user.id' => $userId,
+            'guild.id' => (int) $guildId ?: $this->guildId
+        ]));
+    }
+
+    /**
+     * Modify the given user with the given options.
+     *
+     * @param int $userId
+     * @param array $options
+     * @param int|null $guildId
+     *
+     * @return \Illuminate\Support\Collection
+     */
+    public function modifyMember($userId, array $options, $guildId = null)
+    {
+        $options = array_merge([
+            'user.id' => $userId,
+            'guild.id' => (int) $guildId ?: $this->guildId
+        ], $options);
+
+        return collect($this->discord->guild->modifyGuildMember($options));
     }
 
     /**
@@ -125,52 +183,19 @@ class _Guild extends \IPS\discord\Api
     }
 
     /**
-     * Modify the given user with the given options.
-     *
-     * @param int $userId
-     * @param array $options
-     * @param int|null $guildId
-     *
-     * @return \Illuminate\Support\Collection
-     */
-    public function modifyMember($userId, array $options, $guildId = null)
-    {
-        $options = array_merge([
-            'user.id' => $userId,
-            'guild.id' => (int) $guildId ?: $this->guildId
-        ], $options);
-
-        return collect($this->discord->guild->modifyGuildMember($options));
-    }
-
-    /**
-     * Remove the given user from the guild.
-     *
-     * @param int $userId
-     * @param int|null $guildId
-     *
-     * @return \Illuminate\Support\Collection
-     */
-    public function removeMember($userId, $guildId = null)
-    {
-        return collect($this->discord->guild->removeGuildMember([
-            'user.id' => $userId,
-            'guild.id' => (int) $guildId ?: $this->guildId
-        ]));
-    }
-
-    /**
      * Get all roles for the guild.
      *
      * @param int|null $guildId
      *
-     * @return \Illuminate\Support\Collection
+     * @return \IPS\discord\Model\Discord\Roles
      */
     public function roles($guildId = null)
     {
-        return collect($this->discord->guild->getGuildRoles([
-            'guild.id' => $guildId ?: $this->guildId
-        ]));
+        return \IPS\discord\Model\Discord\Roles::create(
+            $this->discord->guild->getGuildRoles([
+                'guild.id' => $guildId ?: $this->guildId
+            ])
+        );
     }
 
     /**

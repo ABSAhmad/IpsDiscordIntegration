@@ -9,7 +9,7 @@
  * file that was distributed with this source code.
  */
 
-namespace IPS\discord\Util;
+namespace IPS\discord\Model;
 
 /* To prevent PHP errors (extending class does not exist) revealing path */
 if ( !defined( '\IPS\SUITE_UNIQUE_KEY' ) )
@@ -21,7 +21,7 @@ if ( !defined( '\IPS\SUITE_UNIQUE_KEY' ) )
 /**
  * Class _Member
  *
- * @package IPS\discord\Util
+ * @package IPS\discord\Model
  */
 class _Member
 {
@@ -52,9 +52,9 @@ class _Member
     public function currentRoles()
     {
         $guildMember = $this->guild->getMember( (int)$this->member->discord_id );
-        $guildRoles = $this->guild->roles();
+        $guildRoles = $this->guild->roles()->collection();
 
-        return collect( $guildMember['roles'] )
+        return collect( $guildMember->roles )
             ->flatMap(function ( $roleId ) use ( $guildRoles ) {
                 return $guildRoles->where( 'id', $roleId );
             })
