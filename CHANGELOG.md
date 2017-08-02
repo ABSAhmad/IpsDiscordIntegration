@@ -2,6 +2,8 @@
 
 ## [1.2.0] - Unreleased
 
+## [1.2.0 Alpha 3] - 2017-08-02
+
 ### Added
 - Added support for automatically joining new users into the guild.
 
@@ -92,6 +94,7 @@
 - Added support for automatically removing a member from discord when they are removed from IPS.
 
 [1.2.0]: https://github.com/ABSAhmad/IpsDiscordIntegration/compare/v1.2.0-alpha.2...restcord-experimental
+[1.2.0 Alpha 3]: https://github.com/ABSAhmad/IpsDiscordIntegration/compare/v1.2.0-alpha.2...v1.2.0-alpha.3
 [1.2.0 Alpha 2]: https://github.com/ABSAhmad/IpsDiscordIntegration/compare/v1.2.0-alpha.1...v1.2.0-alpha.2
 [1.2.0 Alpha 1]: https://github.com/ABSAhmad/IpsDiscordIntegration/compare/v1.1.0-beta.3...v1.2.0-alpha.1
 [1.1.0 Beta 3]: https://github.com/ABSAhmad/IpsDiscordIntegration/compare/v1.1.0-beta.2...v1.1.0-beta.3
