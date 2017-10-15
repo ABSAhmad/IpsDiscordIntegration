@@ -10,8 +10,8 @@ namespace IPS\discord;
 class _Api extends \IPS\Patterns\Singleton
 {
     /* API URLs */
-    const API_URL = 'https://discordapp.com/api/';
-    const OAUTH2_URL = 'https://discordapp.com/api/oauth2/';
+    const API_URL = 'https://discordapp.com/api/v6/';
+    const OAUTH2_URL = 'https://discordapp.com/api/v6/oauth2/';
 
     /* Scopes according to https://discordapp.com/developers/docs/topics/oauth2#scopes */
     const SCOPE_BOT = 'bot';
