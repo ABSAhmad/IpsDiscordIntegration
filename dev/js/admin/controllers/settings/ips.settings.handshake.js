@@ -11,6 +11,7 @@
          * Event handler for doing a handshake with discord.
          *
          * @param	{event} 	e 		Event object
+         *
          * @returns {void}
          */
         doHandshake: function ( e ) {
@@ -20,6 +21,7 @@
 
             var socket = new WebSocket( "wss://gateway.discord.gg/?encoding=json&v=6" );
 
+            // TODO: display if all went well for the user
             socket.onerror = function( error ) { Debug.log( error ); };
             socket.onmessage = function( message )
             {
@@ -34,7 +36,7 @@
                             d: {
                                 token: botToken,
                                 properties: {
-                                    $browser: "DiscordBot (ahmadel, v1)"
+                                    $browser: "DiscordBot (ahmadel, v2)"
                                 },
                                 large_threshold: 50
                             }

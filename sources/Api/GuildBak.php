@@ -7,7 +7,7 @@ namespace IPS\discord\Api;
  *
  * @package IPS\discord\Api
  */
-class _Guild extends \IPS\discord\Api\AbstractResponse
+class _Guildbak extends \IPS\discord\Api\AbstractResponse
 {
     /**
      * Get information from guild, which information depends on the passed $uri.

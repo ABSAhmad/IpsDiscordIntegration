@@ -3,23 +3,23 @@
 /* To prevent PHP errors (extending class does not exist) revealing path */
 if ( !defined( '\IPS\SUITE_UNIQUE_KEY' ) )
 {
-    exit;
+	exit;
 }
 
-class discord_hook_forum extends _HOOK_CLASS_
+class discord_hook_forum_form_extension extends _HOOK_CLASS_
 {
-    /**
+	/**
      * [Node] Add/Edit Form
      *
      * @param	\IPS\Helpers\Form	$form	The form
      * @return	void
      */
-    public function form( &$form )
-    {
-        parent::form( $form );
+	public function form( &$form )
+	{
+	    /** @var \IPS\Helpers\Form $form */
+		return parent::form( $form );
 
-        $guild = new \IPS\discord\Api\Guild;
-        $channels = $guild->getChannelsOnlyName();
+		return $form;
 
         $form->addHeader( 'discord_channels' );
         $form->add(
@@ -72,5 +72,7 @@ class discord_hook_forum extends _HOOK_CLASS_
                 TRUE, [], NULL, NULL, NULL, 'discord_post_format'
             )
         );
-    }
+
+		return $form;
+	}
 }

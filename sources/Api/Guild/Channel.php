@@ -1,6 +1,8 @@
 <?php
 
-namespace IPS\discord\Api;
+namespace IPS\discord\Api\Guild;
+
+use IPS\discord\Api\ResponseTransformer;
 
 class _Channel extends \IPS\Patterns\Singleton
 {
@@ -14,14 +16,11 @@ class _Channel extends \IPS\Patterns\Singleton
         $this->httpClient = \IPS\discord\Api\Client::i();
     }
 
-    public function createMessage(\IPS\discord\Api\Request $request)
+    public function all(\IPS\discord\Api\Request $request)
     {
-        $channelId = $request->getQueryParameter('channel_id');
+        $guildId = $request->getQueryParameter('guild_id');
 
-        $response = $this->httpClient->post(
-            "/channels/{$channelId}/messages",
-            $request->getPayload()
-        );
+        $response = $this->httpClient->get("/guilds/{$guildId}/channels");
 
         return $this->transformResponse($response);
     }

@@ -1,1 +1,60 @@
-[]
+{
+    "discord_sync_posts": {
+        "name": "discord_sync_posts",
+        "columns": {
+            "id": {
+                "name": "id",
+                "type": "BIGINT",
+                "length": "20",
+                "unsigned": true,
+                "zerofill": false,
+                "binary": false,
+                "allow_null": false,
+                "default": null,
+                "auto_increment": true,
+                "comment": "ID Number"
+            },
+            "post_id": {
+                "name": "post_id",
+                "type": "INT",
+                "length": 10,
+                "decimals": null,
+                "values": null,
+                "allow_null": false,
+                "default": null,
+                "comment": "Post id to be synced",
+                "unsigned": true,
+                "zerofill": false,
+                "auto_increment": false,
+                "binary": false
+            },
+            "discord_channel_ids": {
+                "name": "discord_channel_ids",
+                "type": "TEXT",
+                "length": null,
+                "decimals": null,
+                "values": null,
+                "allow_null": false,
+                "default": null,
+                "comment": "The discord channel ids to which the notification should be sent.",
+                "unsigned": false,
+                "zerofill": false,
+                "auto_increment": false,
+                "binary": false
+            }
+        },
+        "indexes": {
+            "PRIMARY": {
+                "type": "primary",
+                "name": "PRIMARY",
+                "columns": [
+                    "id"
+                ],
+                "length": [
+                    null
+                ]
+            }
+        },
+        "comment": "Posts to be synced to Discord"
+    }
+}

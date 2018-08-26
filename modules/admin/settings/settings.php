@@ -3,6 +3,9 @@
 namespace IPS\discord\modules\admin\settings;
 
 /* To prevent PHP errors (extending class does not exist) revealing path */
+
+use IPS\discord\Api\Request;
+
 if ( !defined( '\IPS\SUITE_UNIQUE_KEY' ) )
 {
     header( ( isset( $_SERVER['SERVER_PROTOCOL'] ) ? $_SERVER['SERVER_PROTOCOL'] : 'HTTP/1.0' ) . ' 403 Forbidden' );
@@ -14,6 +17,16 @@ if ( !defined( '\IPS\SUITE_UNIQUE_KEY' ) )
  */
 class _settings extends \IPS\Dispatcher\Controller
 {
+    /** @var \IPS\Settings */
+    protected $settings;
+
+    public function __construct(\IPS\Http\Url $url = null)
+    {
+        parent::__construct($url);
+
+        $this->settings = \IPS\Settings::i();
+    }
+
     /**
      * Execute
      *
@@ -84,6 +97,10 @@ class _settings extends \IPS\Dispatcher\Controller
             new \IPS\Helpers\Form\YesNo( 'discord_sync_names', $settings->discord_sync_names ?: FALSE )
         );
 
+        if ($settings->discord_guild_id && \IPS\Application::appIsEnabled('forums')) {
+            $form = $this->buildForumForm($form);
+        }
+
         if ( $values = $form->values() )
         {
             if ( empty( $settings->discord_guild_id ) || empty( $values['discord_guild_id'] ) )
@@ -102,7 +119,7 @@ class _settings extends \IPS\Dispatcher\Controller
                 $redirect = \IPS\Http\Url::internal( 'app=discord&module=settings&controller=settings' );
             }
 
-            $form->saveAsSettings( $values );
+            $form->saveAsSettings( $this->formatFormValues($values) );
 
             \IPS\Output::i()->redirect( $redirect );
         }
@@ -110,5 +127,102 @@ class _settings extends \IPS\Dispatcher\Controller
         /* Output */
         \IPS\Output::i()->title = \IPS\Member::loggedIn()->language()->addToStack( 'discord_setting_title' );
         \IPS\Output::i()->output = (string) $form;
+    }
+
+    protected function buildForumForm(\IPS\Helpers\Form $form)
+    {
+        $channels = \IPS\discord\Api\Guild\Channel::i()->all(
+            (new Request())->addQueryParameter('guild_id', $this->settings->discord_guild_id)
+        );
+
+        $form->addTab( 'discord_forums_settings' );
+        $form->addHeader('discord_post_approved');
+
+        foreach ($channels as $channel) {
+            if ($channel['type'] != 0) { continue; }
+
+            $id = "discord_posts_approved_{$channel['id']}";
+
+            $s = json_decode($this->settings->discord_approved_posts_from_forums, TRUE);
+            $defaultValue = isset($s[$channel['id']]) ? $s[$channel['id']] : NULL;
+
+            $node = new \IPS\Helpers\Form\Node( $id, $defaultValue, FALSE, [
+                'url'					=> \IPS\Http\Url::internal( 'app=discord&module=settings&controller=settings' ),
+                'class'					=> \IPS\forums\Forum::class,
+                'multiple' => TRUE,
+                'zeroVal' => 'none',
+                NULL,
+                NULL,
+                NULL,
+                $id
+            ]);
+
+            $node->label = $channel['name'];
+            $form->add( $node );
+        }
+
+        $form->addHeader('discord_post_unapproved');
+
+        foreach ($channels as $channel) {
+            if ($channel['type'] != 0) { continue; }
+
+            $id = "discord_posts_unapproved_{$channel['id']}";
+
+            $s = json_decode($this->settings->discord_unapproved_posts_from_forums, TRUE);
+            $defaultValue = isset($s[$channel['id']]) ? $s[$channel['id']] : NULL;
+
+            $node = new \IPS\Helpers\Form\Node( $id, $defaultValue, FALSE, [
+                'url'					=> \IPS\Http\Url::internal( 'app=discord&module=settings&controller=settings' ),
+                'class'					=> \IPS\forums\Forum::class,
+                'multiple' => TRUE,
+                'zeroVal' => 'none',
+                NULL,
+                NULL,
+                NULL,
+                $id
+            ]);
+
+            $node->label = $channel['name'];
+            $form->add( $node );
+        }
+
+        return $form;
+    }
+
+    protected function formatFormValues(array $values): array
+    {
+        $approvedList = 'discord_approved_posts_from_forums';
+        $unapprovedList = 'discord_unapproved_posts_from_forums';
+
+        foreach ($values as $key => $value)
+        {
+            $channelId = mb_substr($key, mb_strrpos($key, '_') + 1);
+
+            if (mb_strpos($key, '_posts_approved_') !== FALSE) {
+                $newArrayKey = $approvedList;
+            }
+            elseif (mb_strpos($key, '_posts_unapproved_') !== FALSE) {
+                $newArrayKey = $unapprovedList;
+            }
+            else
+            {
+                continue;
+            }
+
+            if (is_array($value))
+            {
+                $value = array_map(function ($forum) {
+                    return $forum->id;
+                }, $value);
+            }
+
+            $$newArrayKey[$channelId] = $value;
+            unset($values[$key]);
+        }
+
+        $values[$approvedList] = json_encode($$approvedList);
+        $values[$unapprovedList] = json_encode($$unapprovedList);
+
+        return $values;
     }
 }

@@ -13,6 +13,9 @@
 namespace IPS\discord\extensions\core\GroupForm;
 
 /* To prevent PHP errors (extending class does not exist) revealing path */
+
+use IPS\discord\Api\Request;
+
 if ( !defined( '\IPS\SUITE_UNIQUE_KEY' ) )
 {
     header( ( isset( $_SERVER['SERVER_PROTOCOL'] ) ? $_SERVER['SERVER_PROTOCOL'] : 'HTTP/1.0' ) . ' 403 Forbidden' );
@@ -35,8 +38,22 @@ class _roles
     {
         try
         {
-            $guild = new \IPS\discord\Api\Guild;
-            $roles = $guild->getRolesOnlyName();
+            $roles = \IPS\discord\Api\Guild::i()->roles(
+                (new Request())->addQueryParameter('guild_id', \IPS\Settings::i()->discord_guild_id)
+            );
+
+            $roles = array_filter($roles, function ($role) {
+                return $role['name'] !== '@everyone' && $role['managed'] !== TRUE;
+            });
+
+            $ids = array_column($roles, 'id');
+            $names = array_column($roles, 'name');
+
+            $roles = [];
+
+            foreach ($ids as $key => $id) {
+                $roles[$id] = $names[$key];
+            }
 
             /** @noinspection PhpUndefinedFieldInspection */
             $form->add(

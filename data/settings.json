@@ -1,5 +1,9 @@
 [
     {
+        "key": "discord_approved_posts_from_forums",
+        "default": "0"
+    },
+    {
         "key": "discord_bot_token",
         "default": ""
     },
@@ -25,6 +29,10 @@
     },
     {
         "key": "discord_sync_names",
+        "default": "0"
+    },
+    {
+        "key": "discord_unapproved_posts_from_forums",
         "default": "0"
     }
 ]

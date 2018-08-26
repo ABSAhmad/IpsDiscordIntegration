@@ -34,28 +34,6 @@ class _Application extends \IPS\Application
      */
     public function installOther()
     {
-        $maxLoginOrder = \IPS\Db::i()->select( 'MAX(login_order)', 'core_login_handlers' )->first();
-
-        \IPS\Db::i()->insert('core_login_handlers', [
-            'login_settings' => '',
-            'login_key' => 'Discord',
-            'login_enabled' => 1,
-            'login_order' => $maxLoginOrder + 1,
-            'login_acp' => 0
-        ]);
-
-        /* Copy to /applications/core/sources/ProfileSync/ */
-        $profileSync = \copy(
-            \IPS\ROOT_PATH . '/applications/discord/sources/MoveOnInstall/ProfileSync/Discord.php',
-            \IPS\ROOT_PATH . '/applications/core/sources/ProfileSync/Discord.php'
-        );
-
-        /* Copy to /system/Login/ */
-        $systemLogin = \copy(
-            \IPS\ROOT_PATH . '/applications/discord/sources/MoveOnInstall/Login/Discord.php',
-            \IPS\ROOT_PATH . '/system/Login/Discord.php'
-        );
-
         /**
          * Fix: "Permission too open" error.
          * Chmod files that need to be directly called to 644.
@@ -65,11 +43,6 @@ class _Application extends \IPS\Application
             \IPS\ROOT_PATH . '/applications/discord/interface/oauth/auth.php',
             \IPS\FILE_PERMISSION_NO_WRITE
         );
-
-        if ( !$profileSync || !$systemLogin )
-        {
-            throw new \OutOfRangeException( 'Copying required file failed.' );
-        }
 
         \IPS\discord\Util::addAllAttributes();
     }
