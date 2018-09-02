@@ -1,12 +1,12 @@
 <?php
 /**
- * @brief		SynchronizeNewPosts Task
+ * @brief		SynchronizeNewDownloadsFiles Task
  * @author		<a href='https://www.invisioncommunity.com'>Invision Power Services, Inc.</a>
  * @copyright	(c) Invision Power Services, Inc.
  * @license		https://www.invisioncommunity.com/legal/standards/
  * @package		Invision Community
  * @subpackage	discord
- * @since		26 Aug 2018
+ * @since		02 Sep 2018
  */
 
 namespace IPS\discord\tasks;
@@ -19,9 +19,9 @@ if ( !\defined( '\IPS\SUITE_UNIQUE_KEY' ) )
 }
 
 /**
- * SynchronizeNewPosts Task
+ * SynchronizeNewDownloadsFiles Task
  */
-class _SynchronizeNewPosts extends \IPS\Task
+class _SynchronizeNewDownloadsFiles extends \IPS\Task
 {
 	/**
 	 * Execute
@@ -36,38 +36,35 @@ class _SynchronizeNewPosts extends \IPS\Task
 	 */
 	public function execute()
 	{
-        /** @var \IPS\discord\Discord\PostsToSync[] $postsToSyncs */
-        $postsToSyncs = new \IPS\Patterns\ActiveRecordIterator(
-            \IPS\Db::i()->select( '*', 'discord_sync_posts' ),
-            \IPS\discord\Discord\PostsToSync::class
+        /** @var \IPS\discord\Discord\DownloadsFilesToSync[] $filesToSyncs */
+        $filesToSyncs = new \IPS\Patterns\ActiveRecordIterator(
+            \IPS\Db::i()->select( '*', 'discord_sync_downloads_files' ),
+            \IPS\discord\Discord\DownloadsFilesToSync::class
         );
 
         $idsToRemove = [];
 
-        foreach ($postsToSyncs as $postToSync)
+        foreach ($filesToSyncs as $fileToSync)
         {
-            $postId = $postToSync->post_id;
-            $post = \IPS\forums\Topic\Post::load($postId);
-            $channelIds = explode(',', $postToSync->discord_channel_ids);
+            $fileId = $fileToSync->downloads_file_id;
+            $file = \IPS\downloads\File::load($fileId);
+
             try
             {
-                foreach ($channelIds as $channelId)
-                {
-                        \IPS\discord\Api\Channel::i()->createMessage(
-                            $channelId,
-                            [
-                                'content' => $post->author()->name . ' just created a new post in the topic: ' . $post->item()->title
-                            ]
-                        );
-                }
+                \IPS\discord\Api\Channel::i()->createMessage(
+                    $fileToSync->discord_channel_id,
+                    [
+                        'content' => $file->author()->name . ' just uploaded a new file: ' . $file->name
+                    ]
+                );
 
-                $idsToRemove[] = $postToSync->id;
+                $idsToRemove[] = $fileToSync->id;
             }
             catch (\Exception $e) {}
         }
 
-        \IPS\Db::i()->delete('discord_sync_posts', \IPS\Db::i()->in('id', $idsToRemove));
+        \IPS\Db::i()->delete('discord_sync_downloads_files', \IPS\Db::i()->in('id', $idsToRemove));
 
-		return NULL;
+        return NULL;
 	}
 }

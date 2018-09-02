@@ -3,12 +3,9 @@
 namespace IPS\discord\modules\admin\settings;
 
 /* To prevent PHP errors (extending class does not exist) revealing path */
-
-use IPS\discord\Api\Request;
-
-if ( !defined( '\IPS\SUITE_UNIQUE_KEY' ) )
+if ( !\defined( '\IPS\SUITE_UNIQUE_KEY' ) )
 {
-    header( ( isset( $_SERVER['SERVER_PROTOCOL'] ) ? $_SERVER['SERVER_PROTOCOL'] : 'HTTP/1.0' ) . ' 403 Forbidden' );
+    header( ( $_SERVER['SERVER_PROTOCOL'] ?? 'HTTP/1.0' ) . ' 403 Forbidden' );
     exit;
 }
 
@@ -30,7 +27,7 @@ class _settings extends \IPS\Dispatcher\Controller
     /**
      * Execute
      *
-     * @return	void
+     * @return  void
      */
     public function execute()
     {
@@ -46,7 +43,7 @@ class _settings extends \IPS\Dispatcher\Controller
     /**
      * Show settings form.
      *
-     * @return	void
+     * @return  void
      */
     protected function manage()
     {
@@ -90,6 +87,15 @@ class _settings extends \IPS\Dispatcher\Controller
         $form->add(
             new \IPS\Helpers\Form\YesNo( 'discord_remove_unmapped', $settings->discord_remove_unmapped ?: FALSE )
         );
+
+        $form->add(
+            new \IPS\Helpers\Form\YesNo( 'discord_sync_groups', $settings->discord_sync_groups ?: TRUE, FALSE, [ 'togglesOn' => [ 'discord_strict_group_sync' ] ] )
+        );
+
+        $form->add(
+            new \IPS\Helpers\Form\YesNo( 'discord_strict_group_sync', $settings->discord_strict_group_sync ?: FALSE, FALSE, [], NULL, NULL, NULL, 'discord_strict_group_sync' )
+        );
+
         $form->add(
             new \IPS\Helpers\Form\YesNo( 'discord_sync_bans', $settings->discord_sync_bans ?: FALSE )
         );
@@ -131,9 +137,7 @@ class _settings extends \IPS\Dispatcher\Controller
 
     protected function buildForumForm(\IPS\Helpers\Form $form)
     {
-        $channels = \IPS\discord\Api\Guild\Channel::i()->all(
-            (new Request())->addQueryParameter('guild_id', $this->settings->discord_guild_id)
-        );
+        $channels = \IPS\discord\Api\Guild\Channel::i()->all($this->settings->discord_guild_id);
 
         $form->addTab( 'discord_forums_settings' );
         $form->addHeader('discord_post_approved');
@@ -147,8 +151,8 @@ class _settings extends \IPS\Dispatcher\Controller
             $defaultValue = isset($s[$channel['id']]) ? $s[$channel['id']] : NULL;
 
             $node = new \IPS\Helpers\Form\Node( $id, $defaultValue, FALSE, [
-                'url'					=> \IPS\Http\Url::internal( 'app=discord&module=settings&controller=settings' ),
-                'class'					=> \IPS\forums\Forum::class,
+                'url'                   => \IPS\Http\Url::internal( 'app=discord&module=settings&controller=settings' ),
+                'class'                 => \IPS\forums\Forum::class,
                 'multiple' => TRUE,
                 'zeroVal' => 'none',
                 NULL,
@@ -172,8 +176,8 @@ class _settings extends \IPS\Dispatcher\Controller
             $defaultValue = isset($s[$channel['id']]) ? $s[$channel['id']] : NULL;
 
             $node = new \IPS\Helpers\Form\Node( $id, $defaultValue, FALSE, [
-                'url'					=> \IPS\Http\Url::internal( 'app=discord&module=settings&controller=settings' ),
-                'class'					=> \IPS\forums\Forum::class,
+                'url'                   => \IPS\Http\Url::internal( 'app=discord&module=settings&controller=settings' ),
+                'class'                 => \IPS\forums\Forum::class,
                 'multiple' => TRUE,
                 'zeroVal' => 'none',
                 NULL,

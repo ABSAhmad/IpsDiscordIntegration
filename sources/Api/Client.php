@@ -2,6 +2,13 @@
 
 namespace IPS\discord\Api;
 
+/* To prevent PHP errors (extending class does not exist) revealing path */
+if ( !\defined( '\IPS\SUITE_UNIQUE_KEY' ) )
+{
+    header( ( $_SERVER['SERVER_PROTOCOL'] ?? 'HTTP/1.0' ) . ' 403 Forbidden' );
+    exit;
+}
+
 class _Client extends \IPS\Patterns\Singleton
 {
     /* API URLs */
@@ -56,7 +63,124 @@ class _Client extends \IPS\Patterns\Singleton
     const AUTH_TYPE_OAUTH = 'Bearer';
     const AUTH_TYPE_BOT = 'Bot';
 
+    /**
+     * @brief	Singleton Instances
+     */
+    protected static $instance;
+
+    /** @var \IPS\Data\Store */
+    protected $store;
+
+    public function __construct()
+    {
+        $this->store = \IPS\Data\Store::i();
+    }
+
     public function get(string $uri, array $params = [], $authType = self::AUTH_TYPE_BOT, string $token = null)
+    {
+        $this->delayIfNecessary();
+
+        $response = $this->buildRequest($uri, $params, $authType, $token)->get();
+
+        if ((int) $response->httpResponseCode === 429) {
+            usleep($response->decodeJson()['retry_after'] * 1000);
+            return $this->get($uri, $params, $authType, $token);
+        }
+
+        $this->saveRateLimitAttributes($response);
+
+        return $response;
+    }
+
+    public function post(
+        string $uri,
+        array $body = [],
+        array $queryParameters = [],
+        $authType = self::AUTH_TYPE_BOT,
+        string $token = null
+    ) {
+        $this->delayIfNecessary();
+
+        $response = $this->buildRequest($uri, $queryParameters, $authType, $token)->post(json_encode($body));
+
+        if ((int) $response->httpResponseCode === 429) {
+            usleep($response->decodeJson()['retry_after'] * 1000);
+            return $this->post($uri, $body, $queryParameters, $authType, $token);
+        }
+
+        $this->saveRateLimitAttributes($response);
+
+        return $response;
+    }
+
+    public function patch(
+        string $uri,
+        array $body = [],
+        array $queryParameters = [],
+        $authType = self::AUTH_TYPE_BOT,
+        string $token = null
+    ): \IPS\Http\Response {
+        $this->delayIfNecessary();
+
+        $response = $this->buildRequest($uri, $queryParameters, $authType, $token)->patch(json_encode($body));
+
+        if ((int) $response->httpResponseCode === 429) {
+            usleep($response->decodeJson()['retry_after'] * 1000);
+            return $this->patch($uri, $body, $queryParameters, $authType, $token);
+        }
+
+        $this->saveRateLimitAttributes($response);
+
+        return $response;
+    }
+
+    protected function delayIfNecessary()
+    {
+        try {
+            $lastRequestTime  = $this->store->discord_last_request_time;
+            $requestAllowance = $this->store->discord_request_allowance;
+        } catch (\OutOfRangeException $e) {
+            $lastRequestTime  = NULL;
+            $requestAllowance = NULL;
+        }
+
+        $requestTime = microtime(true);
+
+        $delay = max(0, $requestAllowance - ($requestTime - $lastRequestTime));
+
+        if ($delay === 0) {
+            return;
+        }
+
+        $floor = floor($delay);
+        $micro = max(0, floor(($delay - $floor) * 1000000));
+        sleep($floor);
+        usleep($micro);
+    }
+
+    protected function saveRateLimitAttributes(\IPS\Http\Response $response)
+    {
+        if (!isset($response->httpHeaders['x-ratelimit-remaining'], $response->httpHeaders['x-ratelimit-reset'])) {
+            unset($this->store->discord_request_allowance);
+            return;
+        }
+
+        $requests = (int) $response->httpHeaders['x-ratelimit-remaining'];
+        $seconds = (int) $response->httpHeaders['x-ratelimit-reset'] - time();
+
+        $this->store->discord_request_allowance = $seconds / $requests;
+        $this->store->discord_last_request_time = microtime(true);
+    }
+
+    /**
+     * @param string      $uri
+     * @param array       $params
+     * @param string      $authType
+     * @param string|null $token
+     *
+     * @return \IPS\Http\Request\Curl|\IPS\Http\Request\Sockets
+     */
+    protected function buildRequest(string $uri, array $params = [], $authType = self::AUTH_TYPE_BOT, string $token = null)
     {
         // TODO: Make it available in Login Handler settings
         $token = $token ?? \IPS\Settings::i()->discord_bot_token;
@@ -68,49 +192,6 @@ class _Client extends \IPS\Patterns\Singleton
                 'Authorization' => "{$authType} {$token}",
                 'User-Agent' => self::USER_AGENT,
                 'Content-Type' => self::DEFAULT_CONTENT_TYPE
-            ])
-            ->get();
-    }
-
-    public function post(
-        string $uri,
-        array $body = [],
-        array $queryParameters = [],
-        $authType = self::AUTH_TYPE_BOT,
-        string $token = null
-    ) {
-        // TODO: Make it available in Login Handler settings
-        $token = $token ?? \IPS\Settings::i()->discord_bot_token;
-
-        return \IPS\Http\Url::external( self::API_URL . "/{$uri}" )
-            ->setQueryString( $queryParameters )
-            ->request()
-            ->setHeaders([
-                'Authorization' => "{$authType} {$token}",
-                'User-Agent' => self::USER_AGENT,
-                'Content-Type' => self::DEFAULT_CONTENT_TYPE
-            ])
-            ->post(json_encode($body));
-    }
-
-    public function patch(
-        string $uri,
-        array $body = [],
-        array $queryParameters = [],
-        $authType = self::AUTH_TYPE_BOT,
-        string $token = null
-    ): \IPS\Http\Response {
-        // TODO: Make it available in Login Handler settings
-        $token = $token ?? \IPS\Settings::i()->discord_bot_token;
-
-        return \IPS\Http\Url::external( self::API_URL . "/{$uri}" )
-            ->setQueryString( $queryParameters )
-            ->request()
-            ->setHeaders([
-                'Authorization' => "{$authType} {$token}",
-                'User-Agent' => self::USER_AGENT,
-                'Content-Type' => self::DEFAULT_CONTENT_TYPE
-            ])
-            ->patch($body);
+            ]);
     }
 }

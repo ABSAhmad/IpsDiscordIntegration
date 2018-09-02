@@ -1,30 +1,30 @@
 //<?php
 
 /* To prevent PHP errors (extending class does not exist) revealing path */
-if ( !defined( '\IPS\SUITE_UNIQUE_KEY' ) )
+if ( !\defined( '\IPS\SUITE_UNIQUE_KEY' ) )
 {
-	exit;
+    exit;
 }
 
 class discord_hook_add_new_post_to_queue extends _HOOK_CLASS_
 {
-	/**
+    /**
      * Create comment
      *
-     * @param	\IPS\Content\Item		$item				The content item just created
-     * @param	\IPS\forums\Topic\Post	$comment			The comment
-     * @param	bool					$first				Is the first comment?
-     * @param	string					$guestName			If author is a guest, the name to use
-     * @param	bool|NULL				$incrementPostCount	Increment post count? If NULL, will use static::incrementPostCount()
-     * @param	\IPS\Member|NULL		$member				The author of this comment. If NULL, uses currently logged in member.
-     * @param	\IPS\DateTime|NULL		$time				The time
-     * @param	string|NULL				$ipAddress			The IP address or NULL to detect automatically
-     * @param	int|NULL				$hiddenStatus		NULL to set automatically or override: 0 = unhidden; 1 = hidden, pending moderator approval; -1 = hidden (as if hidden by a moderator)
+     * @param   \IPS\Content\Item       $item               The content item just created
+     * @param   \IPS\forums\Topic\Post  $comment            The comment
+     * @param   bool                    $first              Is the first comment?
+     * @param   string                  $guestName          If author is a guest, the name to use
+     * @param   bool|NULL               $incrementPostCount Increment post count? If NULL, will use static::incrementPostCount()
+     * @param   \IPS\Member|NULL        $member             The author of this comment. If NULL, uses currently logged in member.
+     * @param   \IPS\DateTime|NULL      $time               The time
+     * @param   string|NULL             $ipAddress          The IP address or NULL to detect automatically
+     * @param   int|NULL                $hiddenStatus       NULL to set automatically or override: 0 = unhidden; 1 = hidden, pending moderator approval; -1 = hidden (as if hidden by a moderator)
      *
-     * @return	static
+     * @return  static
      */
-	public static function create( $item, $comment, $first=false, $guestName=NULL, $incrementPostCount=NULL, $member=NULL, \IPS\DateTime $time=NULL, $ipAddress=NULL, $hiddenStatus=NULL )
-	{
+    public static function create( $item, $comment, $first=false, $guestName=NULL, $incrementPostCount=NULL, $member=NULL, \IPS\DateTime $time=NULL, $ipAddress=NULL, $hiddenStatus=NULL )
+    {
         /** @var \IPS\forums\Topic\Post $comment */
         $comment = call_user_func_array( 'parent::create', func_get_args() );
 
@@ -41,23 +41,30 @@ class discord_hook_add_new_post_to_queue extends _HOOK_CLASS_
         }
 
         return $comment;
-	}
+    }
 
-//    public function onUnhide( $approving, $member )
-//    {
-//        $return = call_user_func_array( 'parent::onUnhide', func_get_args() );
-//
-//        if ( $approving && $this->container()->discord_post_posts )
-//        {
-//            $channel = new \IPS\discord\Api\Channel;
-//            $channel->postContentItem( $this );
-//        }
-//
-//        return $return;
-//    }
+    public function onUnhide( $approving, $member )
+    {
+        $return = call_user_func_array( 'parent::onUnhide', func_get_args() );
+
+        if ( $approving && $channels = self::shouldBeSentToChannels($this) )
+        {
+            try {
+                \IPS\Db::i()->insert('discord_sync_posts', [
+                    'post_id' => $this->pid,
+                    'discord_channel_ids' => implode(',', $channels)
+                ]);
+            } catch (\Throwable $e) {
+                \IPS\Log::log($e, 'discord_queue_post');
+            }
+        }
+
+        return $return;
+    }
 
     /**
-     * @param bool $isFirstPost
+     * @param bool              $isFirstPost
+     * @param \IPS\Content\Item $item
      *
      * @return bool
      */
@@ -67,6 +74,8 @@ class discord_hook_add_new_post_to_queue extends _HOOK_CLASS_
     }
 
     /**
+     * @param \IPS\forums\Topic\Post $comment
+     *
      * @return array|false
      */
     protected static function shouldBeSentToChannels(\IPS\forums\Topic\Post $comment)
@@ -108,8 +117,6 @@ class discord_hook_add_new_post_to_queue extends _HOOK_CLASS_
                     $postToChannels[] = $channelId;
                 }
             }
-            var_dump($postToChannels);die;
-
 
             return $postToChannels;
         }

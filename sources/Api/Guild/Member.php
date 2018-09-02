@@ -2,11 +2,19 @@
 
 namespace IPS\discord\Api\Guild;
 
-use IPS\discord\Api\ResponseTransformer;
-
-class _Member
+/* To prevent PHP errors (extending class does not exist) revealing path */
+if ( !\defined( '\IPS\SUITE_UNIQUE_KEY' ) )
 {
-    use ResponseTransformer;
+    header( ( $_SERVER['SERVER_PROTOCOL'] ?? 'HTTP/1.0' ) . ' 403 Forbidden' );
+    exit;
+}
+
+class _Member extends \IPS\Patterns\Singleton
+{
+    /**
+     * @brief	Singleton Instances
+     */
+    protected static $instance;
 
     /** @var \IPS\discord\Api\Client */
     protected $httpClient;
@@ -16,13 +24,17 @@ class _Member
         $this->httpClient = \IPS\discord\Api\Client::i();
     }
 
-    public function update(\IPS\discord\Api\Request $request)
+    public function get(string $guildId, string $userId)
     {
-        $guildId = $request->getQueryParameter('guild_id');
-        $userId = $request->getQueryParameter('user_id');
+        $response = $this->httpClient->get("/guilds/{$guildId}/members/{$userId}");
 
-        $response = $this->httpClient->patch("/guilds/{$guildId}/members/{$userId}", $request->getPayload());
+        return $response->decodeJson();
+    }
 
-        return $this->transformResponse($response);
+    public function update(string $guildId, string $userId, array $payload)
+    {
+        $response = $this->httpClient->patch("/guilds/{$guildId}/members/{$userId}", $payload);
+
+        return $response->decodeJson();
     }
 }

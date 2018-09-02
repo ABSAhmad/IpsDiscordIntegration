@@ -2,9 +2,19 @@
 
 namespace IPS\discord\Api;
 
+/* To prevent PHP errors (extending class does not exist) revealing path */
+if ( !\defined( '\IPS\SUITE_UNIQUE_KEY' ) )
+{
+    header( ( $_SERVER['SERVER_PROTOCOL'] ?? 'HTTP/1.0' ) . ' 403 Forbidden' );
+    exit;
+}
+
 class _Channel extends \IPS\Patterns\Singleton
 {
-    use ResponseTransformer;
+    /**
+     * @brief	Singleton Instances
+     */
+    protected static $instance;
 
     /** @var \IPS\discord\Api\Client */
     protected $httpClient;
@@ -14,15 +24,13 @@ class _Channel extends \IPS\Patterns\Singleton
         $this->httpClient = \IPS\discord\Api\Client::i();
     }
 
-    public function createMessage(\IPS\discord\Api\Request $request)
+    public function createMessage(string $channelId, array $payload)
     {
-        $channelId = $request->getQueryParameter('channel_id');
-
         $response = $this->httpClient->post(
             "/channels/{$channelId}/messages",
-            $request->getPayload()
+            $payload
         );
 
-        return $this->transformResponse($response);
+        return $response->decodeJson();
     }
 }

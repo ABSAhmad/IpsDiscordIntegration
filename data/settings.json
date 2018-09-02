@@ -24,8 +24,16 @@
         "default": "0"
     },
     {
+        "key": "discord_strict_group_sync",
+        "default": "0"
+    },
+    {
         "key": "discord_sync_bans",
         "default": "0"
+    },
+    {
+        "key": "discord_sync_groups",
+        "default": "1"
     },
     {
         "key": "discord_sync_names",

@@ -1,25 +1,25 @@
 //<?php
 
 /* To prevent PHP errors (extending class does not exist) revealing path */
-if ( !defined( '\IPS\SUITE_UNIQUE_KEY' ) )
+if ( !\defined( '\IPS\SUITE_UNIQUE_KEY' ) )
 {
-	exit;
+    exit;
 }
 
 class discord_hook_forum_form_extension extends _HOOK_CLASS_
 {
-	/**
+    /**
      * [Node] Add/Edit Form
      *
-     * @param	\IPS\Helpers\Form	$form	The form
-     * @return	void
+     * @param   \IPS\Helpers\Form   $form   The form
+     * @return  void
      */
-	public function form( &$form )
-	{
-	    /** @var \IPS\Helpers\Form $form */
-		return parent::form( $form );
+    public function form( &$form )
+    {
+        /** @var \IPS\Helpers\Form $form */
+        return parent::form( $form );
 
-		return $form;
+        return $form;
 
         $form->addHeader( 'discord_channels' );
         $form->add(
@@ -73,6 +73,6 @@ class discord_hook_forum_form_extension extends _HOOK_CLASS_
             )
         );
 
-		return $form;
-	}
+        return $form;
+    }
 }

@@ -10,6 +10,13 @@
 
 namespace IPS\discord;
 
+/* To prevent PHP errors (extending class does not exist) revealing path */
+if ( !\defined( '\IPS\SUITE_UNIQUE_KEY' ) )
+{
+    header( ( $_SERVER['SERVER_PROTOCOL'] ?? 'HTTP/1.0' ) . ' 403 Forbidden' );
+    exit;
+}
+
 /**
  * Discord Integration Application Class
  * @TODO: Feature: Invite members to the discord server.
@@ -28,22 +35,10 @@ namespace IPS\discord;
 class _Application extends \IPS\Application
 {
     /**
-     * Make sure we have our login handler in the correct table.
-     * Make sure we move our login handler files.
      * Make sure we add our needed columns.
      */
     public function installOther()
     {
-        /**
-         * Fix: "Permission too open" error.
-         * Chmod files that need to be directly called to 644.
-         * Because on some server configurations those are set to 666 by default and thus error out.
-         */
-        \chmod(
-            \IPS\ROOT_PATH . '/applications/discord/interface/oauth/auth.php',
-            \IPS\FILE_PERMISSION_NO_WRITE
-        );
-
         \IPS\discord\Util::addAllAttributes();
     }
 }

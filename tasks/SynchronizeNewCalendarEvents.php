@@ -1,12 +1,12 @@
 <?php
 /**
- * @brief		SynchronizeNewPosts Task
+ * @brief		SynchronizeNewCalendarEvents Task
  * @author		<a href='https://www.invisioncommunity.com'>Invision Power Services, Inc.</a>
  * @copyright	(c) Invision Power Services, Inc.
  * @license		https://www.invisioncommunity.com/legal/standards/
  * @package		Invision Community
  * @subpackage	discord
- * @since		26 Aug 2018
+ * @since		02 Sep 2018
  */
 
 namespace IPS\discord\tasks;
@@ -19,9 +19,9 @@ if ( !\defined( '\IPS\SUITE_UNIQUE_KEY' ) )
 }
 
 /**
- * SynchronizeNewPosts Task
+ * SynchronizeNewCalendarEvents Task
  */
-class _SynchronizeNewPosts extends \IPS\Task
+class _SynchronizeNewCalendarEvents extends \IPS\Task
 {
 	/**
 	 * Execute
@@ -36,38 +36,35 @@ class _SynchronizeNewPosts extends \IPS\Task
 	 */
 	public function execute()
 	{
-        /** @var \IPS\discord\Discord\PostsToSync[] $postsToSyncs */
-        $postsToSyncs = new \IPS\Patterns\ActiveRecordIterator(
-            \IPS\Db::i()->select( '*', 'discord_sync_posts' ),
-            \IPS\discord\Discord\PostsToSync::class
+        /** @var \IPS\discord\Discord\CalendarEventsToSync[] $eventsToSync */
+        $eventsToSync = new \IPS\Patterns\ActiveRecordIterator(
+            \IPS\Db::i()->select( '*', 'discord_sync_calendar_events' ),
+            \IPS\discord\Discord\CalendarEventsToSync::class
         );
 
         $idsToRemove = [];
 
-        foreach ($postsToSyncs as $postToSync)
+        foreach ($eventsToSync as $eventToSync)
         {
-            $postId = $postToSync->post_id;
-            $post = \IPS\forums\Topic\Post::load($postId);
-            $channelIds = explode(',', $postToSync->discord_channel_ids);
+            $eventId = $eventToSync->calendar_event_id;
+            $event = \IPS\calendar\Event::load($eventId);
+
             try
             {
-                foreach ($channelIds as $channelId)
-                {
-                        \IPS\discord\Api\Channel::i()->createMessage(
-                            $channelId,
-                            [
-                                'content' => $post->author()->name . ' just created a new post in the topic: ' . $post->item()->title
-                            ]
-                        );
-                }
+                \IPS\discord\Api\Channel::i()->createMessage(
+                    $eventToSync->discord_channel_id,
+                    [
+                        'content' => $event->author()->name . ' just created a new event: ' . $event->title
+                    ]
+                );
 
-                $idsToRemove[] = $postToSync->id;
+                $idsToRemove[] = $eventToSync->id;
             }
             catch (\Exception $e) {}
         }
 
-        \IPS\Db::i()->delete('discord_sync_posts', \IPS\Db::i()->in('id', $idsToRemove));
+        \IPS\Db::i()->delete('discord_sync_calendar_events', \IPS\Db::i()->in('id', $idsToRemove));
 
-		return NULL;
+        return NULL;
 	}
 }

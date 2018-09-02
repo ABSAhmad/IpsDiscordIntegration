@@ -13,9 +13,9 @@
 namespace IPS\discord\extensions\core\MemberSync;
 
 /* To prevent PHP errors (extending class does not exist) revealing path */
-if ( !defined( '\IPS\SUITE_UNIQUE_KEY' ) )
+if ( !\defined( '\IPS\SUITE_UNIQUE_KEY' ) )
 {
-    header( ( isset( $_SERVER['SERVER_PROTOCOL'] ) ? $_SERVER['SERVER_PROTOCOL'] : 'HTTP/1.0' ) . ' 403 Forbidden' );
+    header( ( $_SERVER['SERVER_PROTOCOL'] ?? 'HTTP/1.0' ) . ' 403 Forbidden' );
     exit;
 }
 
@@ -24,30 +24,6 @@ if ( !defined( '\IPS\SUITE_UNIQUE_KEY' ) )
  */
 class _membersync
 {
-    /**
-     * Member account has been updated
-     *
-     * @param    $member        \IPS\Member    Member updating profile
-     * @param    $changes       array        The changes
-     * @return    void
-     */
-    public function onProfileUpdate( \IPS\Member $member, $changes )
-    {
-        /* Determine whether group(s) has been changed */
-        if ( isset( $changes['member_group_id'] ) || isset( $changes['mgroup_others'] ) )
-        {
-            try
-            {
-                $guildMember = new \IPS\discord\Api\GuildMember;
-                $guildMember->update( $member, $changes );
-            }
-            catch ( \Exception $e )
-            {
-                /* Ignore, can be re-synced. */
-            }
-        }
-    }
-
     /**
      * Member is flagged as spammer
      *

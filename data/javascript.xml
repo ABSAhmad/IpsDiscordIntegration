@@ -13,6 +13,7 @@
          * Event handler for doing a handshake with discord.
          *
          * @param	{event} 	e 		Event object
+         *
          * @returns {void}
          */
         doHandshake: function ( e ) {
@@ -22,7 +23,20 @@
 
             var socket = new WebSocket( "wss://gateway.discord.gg/?encoding=json&v=6" );
 
-            socket.onerror = function( error ) { Debug.log( error ); };
+            // TODO: display if all went well for the user
+            socket.onerror = function( error ) {
+                ips.ui.alert.show({
+                    type: 'alert',
+                    icon: 'error',
+                    message: ips.getString('errorMarkingRead'),
+                    callbacks: {
+                        ok: function () {
+                        }
+                    }
+                });
+
+                Debug.log( error );
+            };
             socket.onmessage = function( message )
             {
                 try
@@ -36,7 +50,7 @@
                             d: {
                                 token: botToken,
                                 properties: {
-                                    $browser: "DiscordBot (ahmadel, v1)"
+                                    $browser: "DiscordBot (ahmadel, v2)"
                                 },
                                 large_threshold: 50
                             }
@@ -51,5 +65,6 @@
             };
         }
     });
-}(jQuery, _));]]></file>
+}(jQuery, _));
+]]></file>
 </javascript>

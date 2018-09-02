@@ -41,7 +41,7 @@ $lang = [
     'login_handler_Discord' => 'Discord',
 
     /* !Group Form */
-    'group__discord_roles' => 'Discord',
+    'group__discord_ExtendWithDiscordRoles' => 'Discord',
     'discord_role' => 'Discord Role',
 
     /* !Forums Form */

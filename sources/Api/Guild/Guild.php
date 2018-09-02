@@ -2,9 +2,19 @@
 
 namespace IPS\discord\Api;
 
+/* To prevent PHP errors (extending class does not exist) revealing path */
+if ( !\defined( '\IPS\SUITE_UNIQUE_KEY' ) )
+{
+    header( ( $_SERVER['SERVER_PROTOCOL'] ?? 'HTTP/1.0' ) . ' 403 Forbidden' );
+    exit;
+}
+
 class _Guild extends \IPS\Patterns\Singleton
 {
-    use ResponseTransformer;
+    /**
+     * @brief	Singleton Instances
+     */
+    protected static $instance;
 
     /** @var \IPS\discord\Api\Client */
     protected $httpClient;
@@ -14,12 +24,8 @@ class _Guild extends \IPS\Patterns\Singleton
         $this->httpClient = \IPS\discord\Api\Client::i();
     }
 
-    public function roles(\IPS\discord\Api\Request $request): array
+    public function roles(string $guildId): array
     {
-        $guildId = $request->getQueryParameter('guild_id');
-
-        return $this->transformResponse(
-            $this->httpClient->get("/guilds/{$guildId}/roles")
-        );
+        return $this->httpClient->get("/guilds/{$guildId}/roles")->decodeJson();
     }
 }

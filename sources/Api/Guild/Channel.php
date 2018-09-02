@@ -2,11 +2,19 @@
 
 namespace IPS\discord\Api\Guild;
 
-use IPS\discord\Api\ResponseTransformer;
+/* To prevent PHP errors (extending class does not exist) revealing path */
+if ( !\defined( '\IPS\SUITE_UNIQUE_KEY' ) )
+{
+    header( ( $_SERVER['SERVER_PROTOCOL'] ?? 'HTTP/1.0' ) . ' 403 Forbidden' );
+    exit;
+}
 
 class _Channel extends \IPS\Patterns\Singleton
 {
-    use ResponseTransformer;
+    /**
+     * @brief	Singleton Instances
+     */
+    protected static $instance;
 
     /** @var \IPS\discord\Api\Client */
     protected $httpClient;
@@ -16,12 +24,10 @@ class _Channel extends \IPS\Patterns\Singleton
         $this->httpClient = \IPS\discord\Api\Client::i();
     }
 
-    public function all(\IPS\discord\Api\Request $request)
+    public function all(string $guildId)
     {
-        $guildId = $request->getQueryParameter('guild_id');
-
         $response = $this->httpClient->get("/guilds/{$guildId}/channels");
 
-        return $this->transformResponse($response);
+        return $response->decodeJson();
     }
 }

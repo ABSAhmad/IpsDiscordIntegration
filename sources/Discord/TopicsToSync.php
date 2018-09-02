@@ -9,7 +9,7 @@ if ( !\defined( '\IPS\SUITE_UNIQUE_KEY' ) )
     exit;
 }
 
-class _PostsToSync extends \IPS\Patterns\ActiveRecord
+class _TopicsToSync extends \IPS\Patterns\ActiveRecord
 {
     /**
      * @brief	Application
@@ -19,5 +19,5 @@ class _PostsToSync extends \IPS\Patterns\ActiveRecord
     /**
      * @brief	[ActiveRecord] Database Table
      */
-    public static $databaseTable = 'discord_sync_posts';
+    public static $databaseTable = 'discord_sync_topics';
 }

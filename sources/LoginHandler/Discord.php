@@ -2,6 +2,13 @@
 
 namespace IPS\discord\LoginHandler;
 
+/* To prevent PHP errors (extending class does not exist) revealing path */
+if ( !\defined( '\IPS\SUITE_UNIQUE_KEY' ) )
+{
+    header( ( $_SERVER['SERVER_PROTOCOL'] ?? 'HTTP/1.0' ) . ' 403 Forbidden' );
+    exit;
+}
+
 class _Discord extends \IPS\Login\Handler\OAuth2
 {
     const API_URL = 'https://discordapp.com/api/v6';

@@ -1,12 +1,12 @@
 //<?php
 
 /* To prevent PHP errors (extending class does not exist) revealing path */
-if ( !defined( '\IPS\SUITE_UNIQUE_KEY' ) )
+if ( !\defined( '\IPS\SUITE_UNIQUE_KEY' ) )
 {
-    exit;
+	exit;
 }
 
-class discord_hook_downloadsApplication extends _HOOK_CLASS_
+class discord_hook_downloads_extend_install_routine extends _HOOK_CLASS_
 {
     /**
      * Install 'other' items. Left blank here so that application classes can override for app

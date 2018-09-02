@@ -1,47 +1,7 @@
 {
-    "member": {
-        "type": "C",
-        "class": "\\IPS\\Member"
-    },
     "hookCssJs": {
         "type": "C",
         "class": "\\IPS\\Dispatcher\\Standard"
-    },
-    "topic": {
-        "type": "C",
-        "class": "\\IPS\\forums\\Topic"
-    },
-    "nodecontroller": {
-        "type": "C",
-        "class": "\\IPS\\Node\\Controller"
-    },
-    "downloadsCategory": {
-        "type": "C",
-        "class": "\\IPS\\downloads\\Category"
-    },
-    "calendarForm": {
-        "type": "C",
-        "class": "\\IPS\\calendar\\Calendar"
-    },
-    "calendarEvent": {
-        "type": "C",
-        "class": "\\IPS\\calendar\\Event"
-    },
-    "downloadsFile": {
-        "type": "C",
-        "class": "\\IPS\\downloads\\File"
-    },
-    "downloadsApplication": {
-        "type": "C",
-        "class": "\\IPS\\downloads\\Application"
-    },
-    "calendarApplication": {
-        "type": "C",
-        "class": "\\IPS\\calendar\\Application"
-    },
-    "forumsApplication": {
-        "type": "C",
-        "class": "\\IPS\\forums\\Application"
     },
     "register_login_handler": {
         "type": "C",
@@ -54,5 +14,37 @@
     "forum_form_extension": {
         "type": "C",
         "class": "\\IPS\\forums\\Forum"
+    },
+    "calendar_extend_install_routine": {
+        "type": "C",
+        "class": "\\IPS\\calendar\\Application"
+    },
+    "calendar_extend_form": {
+        "type": "C",
+        "class": "\\IPS\\calendar\\Calendar"
+    },
+    "add_new_calendar_event_to_queue": {
+        "type": "C",
+        "class": "\\IPS\\calendar\\Event"
+    },
+    "forum_extend_install_routine": {
+        "type": "C",
+        "class": "\\IPS\\forums\\Application"
+    },
+    "downloads_extend_install_routine": {
+        "type": "C",
+        "class": "\\IPS\\downloads\\Application"
+    },
+    "downloads_extend_form": {
+        "type": "C",
+        "class": "\\IPS\\downloads\\Category"
+    },
+    "add_new_downloads_file_to_queue": {
+        "type": "C",
+        "class": "\\IPS\\downloads\\File"
+    },
+    "add_new_topic_to_queue": {
+        "type": "C",
+        "class": "\\IPS\\forums\\Topic"
     }
 }
