@@ -17,47 +17,10 @@ class discord_hook_forum_form_extension extends _HOOK_CLASS_
     public function form( &$form )
     {
         /** @var \IPS\Helpers\Form $form */
-        return parent::form( $form );
-
-        return $form;
-
-        $form->addHeader( 'discord_channels' );
-        $form->add(
-            new \IPS\Helpers\Form\Select( 'discord_channel_approved', $this->discord_channel_approved ?: 0, TRUE, [
-                'options' => $channels
-            ] )
-        );
-        $form->add(
-            new \IPS\Helpers\Form\Select( 'discord_channel_unapproved', $this->discord_channel_unapproved ?: 0, TRUE, [
-                'options' => $channels
-            ] )
-        );
+        parent::form( $form );
 
         $form->addHeader( 'discord_notifications' );
-        $form->add(
-            new \IPS\Helpers\Form\YesNo( 'discord_post_topics', $this->discord_post_topics ?: FALSE, FALSE, [
-                'togglesOff' => [
-                    'discord_post_unapproved_topics'
-                ]
-            ] )
-        );
-        $form->add(
-            new \IPS\Helpers\Form\YesNo( 'discord_post_unapproved_topics', $this->discord_post_unapproved_topics ?: FALSE,
-                FALSE, [], NULL, NULL, NULL, 'discord_post_unapproved_topics'
-            )
-        );
-        $form->add(
-            new \IPS\Helpers\Form\YesNo( 'discord_post_posts', $this->discord_post_posts ?: FALSE, FALSE, [
-                'togglesOff' => [
-                    'discord_post_unapproved_posts'
-                ]
-            ] )
-        );
-        $form->add(
-            new \IPS\Helpers\Form\YesNo( 'discord_post_unapproved_posts', $this->discord_post_unapproved_posts ?: FALSE,
-                FALSE, [], NULL, NULL, NULL, 'discord_post_unapproved_posts'
-            )
-        );
+
         $form->add(
             new \IPS\Helpers\Form\TextArea(
                 'discord_topic_format',
@@ -72,7 +35,5 @@ class discord_hook_forum_form_extension extends _HOOK_CLASS_
                 TRUE, [], NULL, NULL, NULL, 'discord_post_format'
             )
         );
-
-        return $form;
     }
 }

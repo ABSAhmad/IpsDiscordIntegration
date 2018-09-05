@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <language>
- <app key="discord" version="10103">
+ <app key="discord" version="20000">
   <word key="__app_discord" js="0">Discord Integration</word>
   <word key="menu__discord_settings" js="0">Discord</word>
   <word key="menu__discord_settings_settings" js="0">Settings</word>
@@ -20,8 +20,9 @@
   <word key="discord_post_approved" js="0">Send approved posts to channels:</word>
   <word key="discord_post_unapproved" js="0">Send unapproved posts to channels:</word>
   <word key="discord_map_settings" js="0">Basic</word>
-  <word key="discord_remove_unmapped" js="0">Remove unmapped roles?</word>
-  <word key="discord_remove_unmapped_desc" js="0">Should roles that are not mapped to IPS groups be removed from discord members?</word>
+  <word key="discord_sync_groups" js="0">Sync the groups/roles of members?</word>
+  <word key="discord_strict_group_sync" js="0">Should the group syncing be strict?</word>
+  <word key="discord_strict_group_sync_desc" js="0">If strict syncing is enabled, all roles which are not known to IPS will be removed from the user in discord.</word>
   <word key="discord_sync_bans" js="0">Sync bans?</word>
   <word key="discord_sync_bans_desc" js="0">Should a member get banned on discord if said member got banned on the forum?</word>
   <word key="discord_sync_names" js="0">Sync names?</word>
@@ -30,7 +31,7 @@
   <word key="discord_sign_in" js="0">Sign in with Discord</word>
   <word key="profilesync__Discord" js="0">Discord</word>
   <word key="login_handler_Discord" js="0">Discord</word>
-  <word key="group__discord_roles" js="0">Discord</word>
+  <word key="group__discord_ExtendWithDiscordRoles" js="0">Discord</word>
   <word key="discord_role" js="0">Discord Role</word>
   <word key="discord_channels" js="0">Discord Channels</word>
   <word key="discord_channel_approved" js="0">Channel to post in if the topic/post is approved.</word>

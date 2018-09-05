@@ -21,7 +21,6 @@ class discord_hook_add_new_topic_to_queue extends _HOOK_CLASS_
 
         if ($channels = self::shouldBeSentToChannels($this))
         {
-
         }
 
         if ( $this->container()->discord_post_topics || ( $this->hidden() && $this->container()->discord_post_unapproved_topics ) )
@@ -48,7 +47,7 @@ class discord_hook_add_new_topic_to_queue extends _HOOK_CLASS_
      */
     public function onUnhide( $approving, $member )
     {
-        $return = call_user_func_array( 'parent::onUnhide', func_get_args() );
+        return call_user_func_array( 'parent::onUnhide', func_get_args() );
 
         if ( $approving && $this->container()->discord_post_topics )
         {

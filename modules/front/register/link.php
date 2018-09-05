@@ -15,16 +15,6 @@ if ( !\defined( '\IPS\SUITE_UNIQUE_KEY' ) )
 class _link extends \IPS\Dispatcher\Controller
 {
     /**
-     * Execute
-     *
-     * @return  void
-     */
-    public function execute()
-    {
-        parent::execute();
-    }
-
-    /**
      * @return  void
      */
     protected function manage()

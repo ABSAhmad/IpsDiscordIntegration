@@ -47,6 +47,12 @@ class _settings extends \IPS\Dispatcher\Controller
      */
     protected function manage()
     {
+        foreach ( \IPS\Application::allExtensions( 'core', 'ContentRouter', FALSE ) as $ext )
+        {
+            var_dump($ext);
+        }
+        die;
+
         $settings = \IPS\Settings::i();
         $redirectUris = [
             (string) \IPS\Http\Url::internal( 'app=discord&module=register&controller=link&do=admin', 'front' ),
@@ -84,9 +90,6 @@ class _settings extends \IPS\Dispatcher\Controller
         );
 
         $form->addTab( 'discord_map_settings' );
-        $form->add(
-            new \IPS\Helpers\Form\YesNo( 'discord_remove_unmapped', $settings->discord_remove_unmapped ?: FALSE )
-        );
 
         $form->add(
             new \IPS\Helpers\Form\YesNo( 'discord_sync_groups', $settings->discord_sync_groups ?: TRUE, FALSE, [ 'togglesOn' => [ 'discord_strict_group_sync' ] ] )
@@ -111,12 +114,12 @@ class _settings extends \IPS\Dispatcher\Controller
         {
             if ( empty( $settings->discord_guild_id ) || empty( $values['discord_guild_id'] ) )
             {
-                $redirect = \IPS\Http\Url::external( \IPS\discord\Api::OAUTH2_URL . 'authorize' )
+                $redirect = \IPS\Http\Url::external( \IPS\discord\Api\Client::OAUTH2_URL . 'authorize' )
                     ->setQueryString([
                         'client_id' => $values['discord_client_id'],
-                        'permissions' => \IPS\discord\Api::PERM_ADMINISTRATOR,
+                        'permissions' => \IPS\discord\Api\Client::PERM_ADMINISTRATOR,
                         'response_type' => 'code',
-                        'scope' => \IPS\discord\Api::SCOPE_BOT,
+                        'scope' => \IPS\discord\Api\Client::SCOPE_BOT,
                         'redirect_uri' => $redirectUris[0]
                     ]);
             }
@@ -148,7 +151,7 @@ class _settings extends \IPS\Dispatcher\Controller
             $id = "discord_posts_approved_{$channel['id']}";
 
             $s = json_decode($this->settings->discord_approved_posts_from_forums, TRUE);
-            $defaultValue = isset($s[$channel['id']]) ? $s[$channel['id']] : NULL;
+            $defaultValue = $s[$channel['id']] ?? null;
 
             $node = new \IPS\Helpers\Form\Node( $id, $defaultValue, FALSE, [
                 'url'                   => \IPS\Http\Url::internal( 'app=discord&module=settings&controller=settings' ),
@@ -173,7 +176,7 @@ class _settings extends \IPS\Dispatcher\Controller
             $id = "discord_posts_unapproved_{$channel['id']}";
 
             $s = json_decode($this->settings->discord_unapproved_posts_from_forums, TRUE);
-            $defaultValue = isset($s[$channel['id']]) ? $s[$channel['id']] : NULL;
+            $defaultValue = $s[$channel['id']] ?? null;
 
             $node = new \IPS\Helpers\Form\Node( $id, $defaultValue, FALSE, [
                 'url'                   => \IPS\Http\Url::internal( 'app=discord&module=settings&controller=settings' ),

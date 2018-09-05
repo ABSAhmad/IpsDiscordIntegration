@@ -27,8 +27,11 @@ $lang = [
     'discord_post_unapproved' => 'Send unapproved posts to channels:',
 
     'discord_map_settings' => 'Basic',
-    'discord_remove_unmapped' => 'Remove unmapped roles?',
-    'discord_remove_unmapped_desc' => 'Should roles that are not mapped to IPS groups be removed from discord members?',
+
+    'discord_sync_groups' => 'Sync the groups/roles of members?',
+    'discord_strict_group_sync' => 'Should the group syncing be strict?',
+    'discord_strict_group_sync_desc' => 'If strict syncing is enabled, all roles which are not known to IPS will be removed from the user in discord.',
+
     'discord_sync_bans' => 'Sync bans?',
     'discord_sync_bans_desc' => 'Should a member get banned on discord if said member got banned on the forum?',
     'discord_sync_names' => 'Sync names?',
