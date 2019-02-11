@@ -11,10 +11,6 @@
         "type": "C",
         "class": "\\IPS\\forums\\Topic\\Post"
     },
-    "forum_form_extension": {
-        "type": "C",
-        "class": "\\IPS\\forums\\Forum"
-    },
     "calendar_extend_install_routine": {
         "type": "C",
         "class": "\\IPS\\calendar\\Application"
@@ -46,5 +42,9 @@
     "add_new_topic_to_queue": {
         "type": "C",
         "class": "\\IPS\\forums\\Topic"
+    },
+    "cms_extend_form": {
+        "type": "C",
+        "class": "\\IPS\\cms\\modules\\admin\\databases\\databases"
     }
 }

@@ -88,11 +88,11 @@ class _Discord extends \IPS\Login\Handler\OAuth2
      */
     protected function authenticatedUserId($accessToken)
     {
-        $response = \IPS\Http\Url::external( "https://discordapp.com/api/v6/users/@me")
+        $response = \IPS\Http\Url::external( 'https://discordapp.com/api/v6/users/@me' )
             ->request()
-            ->setHeaders( array(
+            ->setHeaders([
                 'Authorization' => "Bearer {$accessToken}"
-            ) )
+            ])
             ->get()
             ->decodeJson();
 

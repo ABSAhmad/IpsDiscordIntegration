@@ -54,7 +54,12 @@ class _SynchronizeNewCalendarEvents extends \IPS\Task
                 \IPS\discord\Api\Channel::i()->createMessage(
                     $eventToSync->discord_channel_id,
                     [
-                        'content' => $event->author()->name . ' just created a new event: ' . $event->title
+                        'content' => \IPS\discord\Util\MessageFormatter::createMessageFromIpsData(
+                            $event->title,
+                            $event->author(),
+                            $event->url(),
+                            $event->container()->discord_post_format
+                        ),
                     ]
                 );
 

@@ -19,18 +19,6 @@ if ( !\defined( '\IPS\SUITE_UNIQUE_KEY' ) )
 
 /**
  * Discord Integration Application Class
- * @TODO: Feature: Invite members to the discord server.
- * @TODO: Feature: Delay notifications.
- * @TODO: Feature: Bit.ly URL shortening?
- * @TODO: Discord Widget.
- *
- * @TODO: Feature: Pages support. Status: BLOCKED. Reason: \IPS\cms\modules\admin\databases::form() is not extendable.
- *
- * @TODO: Concept of notification settings.
- * @TODO: Feature: Notifications for PMs.
- * @TODO: Feature: Notifications for watched topics.
- * @TODO: (User)Setting: Send notifications on Discord?
- * @TODO: (User)Setting: Send notifications for approved posts.
  */
 class _Application extends \IPS\Application
 {

@@ -16,7 +16,7 @@ class discord_hook_downloads_extend_install_routine extends _HOOK_CLASS_
      */
     public function installOther()
     {
-        call_user_func_array( 'parent::installOther', func_get_args() );
+        parent::installOther( ...func_get_args() );
 
         \IPS\discord\Util::addDownloadsAttributes();
     }

@@ -17,7 +17,7 @@ class discord_hook_add_new_downloads_file_to_queue extends _HOOK_CLASS_
      */
     protected function processAfterCreate( $comment, $values )
     {
-        call_user_func_array( 'parent::processAfterCreate', func_get_args() );
+        parent::processAfterCreate( ...func_get_args() );
 
         $channelId = $this->hidden() ? $this->container()->discord_channel_unapproved : $this->container()->discord_channel_approved;
 
@@ -45,7 +45,7 @@ class discord_hook_add_new_downloads_file_to_queue extends _HOOK_CLASS_
      */
     public function onUnhide( $approving, $member )
     {
-        call_user_func_array( 'parent::onUnhide', func_get_args() );
+        parent::onUnhide( ...func_get_args() );
 
         $channelId = $this->hidden() ? $this->container()->discord_channel_unapproved : $this->container()->discord_channel_approved;
 

@@ -54,7 +54,12 @@ class _SynchronizeNewDownloadsFiles extends \IPS\Task
                 \IPS\discord\Api\Channel::i()->createMessage(
                     $fileToSync->discord_channel_id,
                     [
-                        'content' => $file->author()->name . ' just uploaded a new file: ' . $file->name
+                        'content' => \IPS\discord\Util\MessageFormatter::createMessageFromIpsData(
+                            $file->name,
+                            $file->author(),
+                            $file->url(),
+                            $file->container()->discord_post_format
+                        ),
                     ]
                 );
 

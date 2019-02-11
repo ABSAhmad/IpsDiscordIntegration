@@ -17,7 +17,7 @@ class discord_hook_add_new_topic_to_queue extends _HOOK_CLASS_
      */
     protected function processAfterCreate( $comment, $values )
     {
-        $return = call_user_func_array( 'parent::processAfterCreate', func_get_args() );
+        $return = parent::processAfterCreate( ...func_get_args() );
 
         if ($channels = self::shouldBeSentToChannels($this))
         {
@@ -47,7 +47,7 @@ class discord_hook_add_new_topic_to_queue extends _HOOK_CLASS_
      */
     public function onUnhide( $approving, $member )
     {
-        return call_user_func_array( 'parent::onUnhide', func_get_args() );
+        return parent::onUnhide( ...func_get_args() );
 
         if ( $approving && $this->container()->discord_post_topics )
         {

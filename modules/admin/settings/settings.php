@@ -47,12 +47,6 @@ class _settings extends \IPS\Dispatcher\Controller
      */
     protected function manage()
     {
-        foreach ( \IPS\Application::allExtensions( 'core', 'ContentRouter', FALSE ) as $ext )
-        {
-            var_dump($ext);
-        }
-        die;
-
         $settings = \IPS\Settings::i();
         $redirectUris = [
             (string) \IPS\Http\Url::internal( 'app=discord&module=register&controller=link&do=admin', 'front' ),
@@ -100,6 +94,14 @@ class _settings extends \IPS\Dispatcher\Controller
         );
 
         $form->add(
+            new \IPS\Helpers\Form\Radio('discord_on_set_as_spammer', NULL, FALSE, ['options' => [
+                'ban' => 'ban_member',
+                'kick' => 'kick_member',
+                'nothing' => 'not_a_thing'
+            ]])
+        );
+
+        $form->add(
             new \IPS\Helpers\Form\YesNo( 'discord_sync_bans', $settings->discord_sync_bans ?: FALSE )
         );
         $form->add(
@@ -108,6 +110,14 @@ class _settings extends \IPS\Dispatcher\Controller
 
         if ($settings->discord_guild_id && \IPS\Application::appIsEnabled('forums')) {
             $form = $this->buildForumForm($form);
+
+            $form->add(
+                new \IPS\Helpers\Form\TextArea( 'discord_approved_post_format', $settings->discord_approved_post_format ?: NULL )
+            );
+
+            $form->add(
+                new \IPS\Helpers\Form\TextArea( 'discord_unapproved_post_format', $settings->discord_unapproved_post_format ?: NULL )
+            );
         }
 
         if ( $values = $form->values() )

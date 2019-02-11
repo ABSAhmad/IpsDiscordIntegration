@@ -56,7 +56,12 @@ class _SynchronizeNewPosts extends \IPS\Task
                         \IPS\discord\Api\Channel::i()->createMessage(
                             $channelId,
                             [
-                                'content' => $post->author()->name . ' just created a new post in the topic: ' . $post->item()->title
+                                'content' => \IPS\discord\Util\MessageFormatter::createMessageFromIpsData(
+                                    $post->item()->title,
+                                    $post->author(),
+                                    $post->url(),
+                                    $post->hidden() ? \IPS\Settings::i()->discord_unapproved_post_format : \IPS\Settings::i()->discord_approved_post_format
+                                ),
                             ]
                         );
                 }

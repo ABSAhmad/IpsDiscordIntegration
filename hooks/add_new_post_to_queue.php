@@ -26,7 +26,7 @@ class discord_hook_add_new_post_to_queue extends _HOOK_CLASS_
     public static function create( $item, $comment, $first=false, $guestName=NULL, $incrementPostCount=NULL, $member=NULL, \IPS\DateTime $time=NULL, $ipAddress=NULL, $hiddenStatus=NULL )
     {
         /** @var \IPS\forums\Topic\Post $comment */
-        $comment = call_user_func_array( 'parent::create', func_get_args() );
+        $comment = parent::create( ...func_get_args() );
 
         if ( self::isNotTopic($first, $item) && $channels = self::shouldBeSentToChannels($comment) )
         {
@@ -45,7 +45,7 @@ class discord_hook_add_new_post_to_queue extends _HOOK_CLASS_
 
     public function onUnhide( $approving, $member )
     {
-        $return = call_user_func_array( 'parent::onUnhide', func_get_args() );
+        $return = parent::onUnhide( ...func_get_args() );
 
         if ( $approving && $channels = self::shouldBeSentToChannels($this) )
         {

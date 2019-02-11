@@ -1,5 +1,9 @@
 [
     {
+        "key": "discord_approved_post_format",
+        "default": "{poster} has just created a new post called: \"{title}\". Read more: {link}"
+    },
+    {
         "key": "discord_approved_posts_from_forums",
         "default": "0"
     },
@@ -38,6 +42,10 @@
     {
         "key": "discord_sync_names",
         "default": "0"
+    },
+    {
+        "key": "discord_unapproved_post_format",
+        "default": "{poster} has just created a new post called: \"{title}\". Read more: {link}"
     },
     {
         "key": "discord_unapproved_posts_from_forums",

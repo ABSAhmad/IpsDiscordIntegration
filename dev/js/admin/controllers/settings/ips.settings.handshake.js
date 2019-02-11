@@ -21,7 +21,6 @@
 
             var socket = new WebSocket( "wss://gateway.discord.gg/?encoding=json&v=6" );
 
-            // TODO: display if all went well for the user
             socket.onerror = function( error ) { Debug.log( error ); };
             socket.onmessage = function( message )
             {
